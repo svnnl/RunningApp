@@ -25,7 +25,7 @@ namespace RunApp
 
             // The header of the App
             header = new TextView(this);
-            header.Text = "Running App";
+            header.Text = "Buttons";
 
             // The buttons
             centre = new Button(this);

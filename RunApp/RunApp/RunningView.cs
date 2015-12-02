@@ -28,7 +28,7 @@ namespace RunApp
         // Constructor
         public RunningView(Context c) : base(c)
         {
-            this.Touch += pinch;
+            this.Touch += touch;
             b = BitmapFactory.DecodeResource(c.Resources, Resource.Drawable.Utrecht);
            // lm = new LocationManager()
             // lm.RequestLocationUpdates()
@@ -49,7 +49,7 @@ namespace RunApp
         }
    
         // Touch Event
-        public void pinch(object sender, TouchEventArgs tea)
+        public void touch(object sender, TouchEventArgs tea)
         {
             v1 = new PointF(tea.Event.GetX(), tea.Event.GetY());
 
