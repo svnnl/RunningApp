@@ -23,6 +23,7 @@ namespace RunApp
         PointF v1, v2;
         float schaal;
         double north, east;
+        Matrix mat;
 
         // Constructor
         public RunningView(Context c) : base(c)
@@ -36,6 +37,10 @@ namespace RunApp
         protected override void OnDraw(Canvas canvas)
         {
             base.OnDraw(canvas);
+
+            schaal = this.Width / b.Width;
+
+            canvas.DrawBitmap(b, mat, null);
         }
    
         // Touch Event
@@ -51,8 +56,21 @@ namespace RunApp
 
             }
         }
+        
+        public void centreMap(object sender, EventArgs ea)
+        {
 
+        }
+        
+        public void startRoute(object sender, EventArgs ea)
+        {
 
+        }
+
+        public void clearMap(object sender, EventArgs ea)
+        {
+
+        }
 
         public void OnLocationChanged(Location loc)
         {

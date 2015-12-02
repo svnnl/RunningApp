@@ -30,12 +30,15 @@ namespace RunApp
             // The buttons
             centre = new Button(this);
             centre.Text = "Centre";
+            centre.Click += runv.centreMap;
 
             start = new Button(this);
             start.Text = "Start";
+            start.Click += runv.startRoute;
 
             clear = new Button(this);
             clear.Text = "Clear";
+            clear.Click += runv.clearMap;
 
             // The updates location status
             status = new TextView(this);
