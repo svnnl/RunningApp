@@ -38,9 +38,14 @@ namespace RunApp
         {
             base.OnDraw(canvas);
 
+            Paint verf = new Paint();
+            verf.Color = Color.White;
+
+            mat = new Matrix();
+
             schaal = this.Width / b.Width;
 
-            canvas.DrawBitmap(b, mat, null);
+            canvas.DrawBitmap(b, mat, verf);
         }
    
         // Touch Event
