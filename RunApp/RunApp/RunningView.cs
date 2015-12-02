@@ -28,8 +28,9 @@ namespace RunApp
         public RunningView(Context c) : base(c)
         {
             this.Touch += pinch;
-            lm = new LocationManager()
-            lm.RequestLocationUpdates()
+            b = BitmapFactory.DecodeResource(c.Resources, Resource.Drawable.Utrecht);
+           // lm = new LocationManager()
+            // lm.RequestLocationUpdates()
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -51,6 +52,8 @@ namespace RunApp
             }
         }
 
+
+
         public void OnLocationChanged(Location loc)
         {
             north = loc.Latitude;
@@ -58,6 +61,7 @@ namespace RunApp
 
         }
 
+        // Necessary methods for Interface implementation
         public void OnProviderDisabled(string provider)
         {
             throw new NotImplementedException();
