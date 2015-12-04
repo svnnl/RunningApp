@@ -23,24 +23,30 @@ namespace RunApp
 
             runv = new RunningView(this);
 
-            // The header of the App
+            // Detects the amount of pixels of your screen
+            var metrics = Resources.DisplayMetrics;
+
+            /* The header of the App
             header = new TextView(this);
-            header.Text = "Buttons";
+            header.Text = "Buttons"; */
 
             // The buttons
             centre = new Button(this);
             centre.Text = "Centre";
+            centre.SetWidth(metrics.WidthPixels / 3);
             centre.Click += runv.centreMap;
 
             start = new Button(this);
             start.Text = "Start";
+            start.SetWidth(metrics.WidthPixels / 3);
             start.Click += runv.startRoute;
 
             clear = new Button(this);
             clear.Text = "Clear";
+            clear.SetWidth(metrics.WidthPixels / 3);
             clear.Click += runv.clearMap;
 
-            LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(WindowManagerLayoutParams.MatchParent, 340, 200);
+            LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(200, 200);
             par.RightMargin = 30;
 
             // The updated location status

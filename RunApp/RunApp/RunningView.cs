@@ -15,12 +15,13 @@ using Android.Hardware;
 
 namespace RunApp
 {
-
     // Custom View for the App
     class RunningView : View ,
         ILocationListener, ISensorEventListener, ScaleGestureDetector.IOnScaleGestureListener
     {
-        // LocationManager lm;
+        LocationManager lm;
+        SensorManager sm;
+
         Bitmap b;
         
         float scale;
@@ -31,19 +32,20 @@ namespace RunApp
 
         // Constructor
         public RunningView(Context c) : base(c)
-        {         
+        {               
+            sm = (SensorManager)c.GetSystemService(Context.SensorService);
+            sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
             
-            // SensorManager sm = (SensorManager)c.GetSystemService(Context.SensorService);
-            // sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
-        
+            lm = (LocationManager)c.GetSystemService(Context.LocationService);
+           //lm.RequestLocationUpdates(500, 5 );
+
             BitmapFactory.Options opties = new BitmapFactory.Options();
 
             b = BitmapFactory.DecodeResource(c.Resources, Resource.Drawable.Utrecht, opties);
             opties.InScaled = false;
-                        
-            // lm.RequestLocationUpdates()
 
             this.Touch += touch;
+
             detector = new ScaleGestureDetector(c, this);
             alert = new AlertDialog.Builder(c);
         }
@@ -99,6 +101,7 @@ namespace RunApp
             detector.OnTouchEvent(tea.Event);
         }
 
+        // Gesture detector interface methods
         public bool OnScale(ScaleGestureDetector detector)
         {
             this.scale *= detector.ScaleFactor;
@@ -123,7 +126,7 @@ namespace RunApp
             east = loc.Longitude;
         }
 
-        // Necessary methods for Interface implementation
+        // Necessary methods for Location interface
         public void OnProviderDisabled(string provider)
         {
             throw new NotImplementedException();
@@ -139,6 +142,7 @@ namespace RunApp
             throw new NotImplementedException();
         }
 
+        // Sensor interface methods
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         {
             throw new NotImplementedException();
