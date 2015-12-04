@@ -26,7 +26,7 @@ namespace RunApp
         
         float scale;
         // float angle;
-        double north, east;
+        
         AlertDialog.Builder alert;
         ScaleGestureDetector detector;
 
@@ -37,7 +37,14 @@ namespace RunApp
             sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
             
             lm = (LocationManager)c.GetSystemService(Context.LocationService);
-           //lm.RequestLocationUpdates(500, 5 );
+            Criteria crit = new Criteria();
+            crit.Accuracy = Accuracy.Fine;
+            IList<string> alp = lm.GetProviders(crit, true);
+            if(alp != null)
+            {
+                string lp = alp[0];
+                lm.RequestLocationUpdates(lp, 0, 0, this);
+            }
 
             BitmapFactory.Options opties = new BitmapFactory.Options();
 
@@ -122,8 +129,9 @@ namespace RunApp
         // Action when Location has changed
         public void OnLocationChanged(Location loc)
         {
-            north = loc.Latitude;
-            east = loc.Longitude;
+            double north = loc.Latitude;
+            double east = loc.Longitude;
+            string info = $"{north} Latitude, {east} Longitude";
         }
 
         // Necessary methods for Location interface
