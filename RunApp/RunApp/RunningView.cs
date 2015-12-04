@@ -11,26 +11,39 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.Locations;
+using Android.Hardware;
 
 namespace RunApp
 {
 
     // Custom View for the App
-    class RunningView : View , ILocationListener
+    class RunningView : View ,
+        ILocationListener, ISensorEventListener, ScaleGestureDetector.IOnScaleGestureListener
     {
-        LocationManager lm;
+        // LocationManager lm;
         Bitmap b;
-        PointF v1, v2;
-        float schaal;
+        
+        float scale;
+        // float angle;
         double north, east;
-        Matrix mat;
+        AlertDialog.Builder alert;
+        ScaleGestureDetector det;
 
         // Constructor
         public RunningView(Context c) : base(c)
         {
             this.Touch += touch;
-            b = BitmapFactory.DecodeResource(c.Resources, Resource.Drawable.Utrecht);
-           // lm = new LocationManager()
+            det = new ScaleGestureDetector(c, this);
+            alert = new AlertDialog.Builder(c);
+
+            // SensorManager sm = (SensorManager)c.GetSystemService(Context.SensorService);
+            // sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
+        
+            BitmapFactory.Options opties = new BitmapFactory.Options();
+
+            b = BitmapFactory.DecodeResource(c.Resources, Resource.Drawable.Utrecht, opties);
+            opties.InScaled = false;
+                        
             // lm.RequestLocationUpdates()
         }
 
@@ -38,28 +51,24 @@ namespace RunApp
         {
             base.OnDraw(canvas);
 
+            if(scale == 0)
+                scale = Math.Min(((float)this.Width) / this.b.Width, ((float)this.Height) / this.b.Height);
+
             Paint verf = new Paint();
-            verf.Color = Color.White;
+            verf.TextSize = 30;
 
-            mat = new Matrix();
-
-            schaal = this.Width / b.Width;
-
+            Matrix mat = new Matrix();
+            mat.PostTranslate(-this.b.Width / 2, -this.b.Height / 2);
+            mat.PostScale(this.scale, this.scale);
+            // mat.PostRotate(-this.angle);
+            mat.PostTranslate(this.Width / 2, this.Height / 2);
             canvas.DrawBitmap(b, mat, verf);
         }
-   
+
         // Touch Event
         public void touch(object sender, TouchEventArgs tea)
         {
-            v1 = new PointF(tea.Event.GetX(), tea.Event.GetY());
-
-            // Pinch event
-            if (tea.Event.PointerCount == 2)
-            {
-                v2 = new PointF(tea.Event.GetX(1), tea.Event.GetY(1));
-               // if (tea.Event.Action ==  )
-
-            }
+            det.OnTouchEvent(tea.Event);
         }
         
         public void centreMap(object sender, EventArgs ea)
@@ -72,16 +81,19 @@ namespace RunApp
 
         }
 
+        // Clears track when dialog is confirmed
         public void clearMap(object sender, EventArgs ea)
         {
-
+            alert.SetMessage("Are you sure you want to delete your track?");
+            alert.SetCancelable(false);
+            // alert.SetPositiveButton("Yes",  )
+            alert.Show();
         }
 
         public void OnLocationChanged(Location loc)
         {
             north = loc.Latitude;
             east = loc.Longitude;
-
         }
 
         // Necessary methods for Interface implementation
@@ -96,6 +108,33 @@ namespace RunApp
         }
 
         public void OnStatusChanged(string provider, [GeneratedEnum] Availability status, Bundle extras)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnSensorChanged(SensorEvent e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool OnScale(ScaleGestureDetector detector)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool OnScaleBegin(ScaleGestureDetector detector)
+        {
+            this.scale *= det.ScaleFactor;
+            this.Invalidate();
+            return true;
+        }
+
+        public void OnScaleEnd(ScaleGestureDetector detector)
         {
             throw new NotImplementedException();
         }

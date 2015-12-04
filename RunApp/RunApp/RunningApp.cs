@@ -40,16 +40,19 @@ namespace RunApp
             clear.Text = "Clear";
             clear.Click += runv.clearMap;
 
-            // The updates location status
+            LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(340, 200);
+            par.RightMargin = 30;
+
+            // The updated location status
             status = new TextView(this);
             status.Text = "Location:"; // Coordinates
 
             // Layout for horizontal oriented buttons
             buttons = new LinearLayout(this);
             buttons.Orientation = Orientation.Horizontal;
-            buttons.AddView(centre);
-            buttons.AddView(start);
-            buttons.AddView(clear);
+            buttons.AddView(centre, par);
+            buttons.AddView(start, par);
+            buttons.AddView(clear, par);
 
             // Adding all the views
             superstack = new LinearLayout(this);
