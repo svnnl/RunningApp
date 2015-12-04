@@ -27,15 +27,12 @@ namespace RunApp
         // float angle;
         double north, east;
         AlertDialog.Builder alert;
-        ScaleGestureDetector det;
+        ScaleGestureDetector detector;
 
         // Constructor
         public RunningView(Context c) : base(c)
-        {
-            this.Touch += touch;
-            det = new ScaleGestureDetector(c, this);
-            alert = new AlertDialog.Builder(c);
-
+        {         
+            
             // SensorManager sm = (SensorManager)c.GetSystemService(Context.SensorService);
             // sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
         
@@ -45,6 +42,10 @@ namespace RunApp
             opties.InScaled = false;
                         
             // lm.RequestLocationUpdates()
+
+            this.Touch += touch;
+            detector = new ScaleGestureDetector(c, this);
+            alert = new AlertDialog.Builder(c);
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -55,7 +56,6 @@ namespace RunApp
                 scale = Math.Min(((float)this.Width) / this.b.Width, ((float)this.Height) / this.b.Height);
 
             Paint verf = new Paint();
-            verf.TextSize = 30;
 
             Matrix mat = new Matrix();
             mat.PostTranslate(-this.b.Width / 2, -this.b.Height / 2);
@@ -65,17 +65,13 @@ namespace RunApp
             canvas.DrawBitmap(b, mat, verf);
         }
 
-        // Touch Event
-        public void touch(object sender, TouchEventArgs tea)
-        {
-            det.OnTouchEvent(tea.Event);
-        }
-        
+        // Centers map on your location
         public void centreMap(object sender, EventArgs ea)
         {
 
         }
-        
+
+        // Starts route when Start button is clicked
         public void startRoute(object sender, EventArgs ea)
         {
 
@@ -85,11 +81,42 @@ namespace RunApp
         public void clearMap(object sender, EventArgs ea)
         {
             alert.SetMessage("Are you sure you want to delete your track?");
-            alert.SetCancelable(false);
-            // alert.SetPositiveButton("Yes",  )
+            alert.SetCancelable(true);
+            alert.SetPositiveButton("Yes", ((object o, DialogClickEventArgs e) =>
+            {
+                // Delete track
+            }));
+            alert.SetNegativeButton("No", ((object o, DialogClickEventArgs e) =>
+            {
+                // Do nothing
+            }));
             alert.Show();
         }
 
+        // Touch Event
+        public void touch(object sender, TouchEventArgs tea)
+        {
+            detector.OnTouchEvent(tea.Event);
+        }
+
+        public bool OnScale(ScaleGestureDetector detector)
+        {
+            this.scale *= detector.ScaleFactor;
+            this.Invalidate();
+            return true;
+        }
+
+        public bool OnScaleBegin(ScaleGestureDetector detector)
+        {
+            return true;
+        }
+
+        public void OnScaleEnd(ScaleGestureDetector detector)
+        {
+            
+        }
+
+        // Action when Location has changed
         public void OnLocationChanged(Location loc)
         {
             north = loc.Latitude;
@@ -118,23 +145,6 @@ namespace RunApp
         }
 
         public void OnSensorChanged(SensorEvent e)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool OnScale(ScaleGestureDetector detector)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool OnScaleBegin(ScaleGestureDetector detector)
-        {
-            this.scale *= det.ScaleFactor;
-            this.Invalidate();
-            return true;
-        }
-
-        public void OnScaleEnd(ScaleGestureDetector detector)
         {
             throw new NotImplementedException();
         }

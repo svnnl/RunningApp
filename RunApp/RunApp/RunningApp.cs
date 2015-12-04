@@ -40,7 +40,7 @@ namespace RunApp
             clear.Text = "Clear";
             clear.Click += runv.clearMap;
 
-            LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(340, 200);
+            LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(WindowManagerLayoutParams.MatchParent, 340, 200);
             par.RightMargin = 30;
 
             // The updated location status
