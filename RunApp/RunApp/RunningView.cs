@@ -22,11 +22,14 @@ namespace RunApp
         LocationManager lm;
         SensorManager sm;
 
-        Bitmap b;
-        
+        Matrix mat;
+        Bitmap map, pointer;
+        double north, east;
         float scale;
-        // float angle;
-        
+        PointF current;
+        float angle;
+        string info;
+
         AlertDialog.Builder alert;
         ScaleGestureDetector detector;
 
@@ -36,7 +39,7 @@ namespace RunApp
             sm = (SensorManager)c.GetSystemService(Context.SensorService);
             sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
             
-            lm = (LocationManager)c.GetSystemService(Context.LocationService);
+            /*lm = (LocationManager)c.GetSystemService(Context.LocationService);
             Criteria crit = new Criteria();
             crit.Accuracy = Accuracy.Fine;
             IList<string> alp = lm.GetProviders(crit, true);
@@ -44,11 +47,11 @@ namespace RunApp
             {
                 string lp = alp[0];
                 lm.RequestLocationUpdates(lp, 0, 0, this);
-            }
+            }*/
 
             BitmapFactory.Options opties = new BitmapFactory.Options();
 
-            b = BitmapFactory.DecodeResource(c.Resources, Resource.Drawable.Utrecht, opties);
+            map = BitmapFactory.DecodeResource(c.Resources, Resource.Drawable.Utrecht, opties);
             opties.InScaled = false;
 
             this.Touch += touch;
@@ -57,21 +60,30 @@ namespace RunApp
             alert = new AlertDialog.Builder(c);
         }
 
+        // Touch Event
+        public void touch(object sender, TouchEventArgs tea)
+        {
+            
+        }
+
         protected override void OnDraw(Canvas canvas)
         {
             base.OnDraw(canvas);
 
             if(scale == 0)
-                scale = Math.Min(((float)this.Width) / this.b.Width, ((float)this.Height) / this.b.Height);
+                scale = Math.Min(((float)this.Width) / this.map.Width, ((float)this.Height) / this.map.Height);
 
             Paint verf = new Paint();
 
-            Matrix mat = new Matrix();
-            mat.PostTranslate(-this.b.Width / 2, -this.b.Height / 2);
+            mat = new Matrix();
+            
+            mat.PostTranslate(-this.map.Width / 2, -this.map.Height / 2);
             mat.PostScale(this.scale, this.scale);
             // mat.PostRotate(-this.angle);
             mat.PostTranslate(this.Width / 2, this.Height / 2);
-            canvas.DrawBitmap(b, mat, verf);
+
+            canvas.DrawBitmap(map, mat, verf);
+    
         }
 
         // Centers map on your location
@@ -83,7 +95,12 @@ namespace RunApp
         // Starts route when Start button is clicked
         public void startRoute(object sender, EventArgs ea)
         {
-
+            
+            bool stop = false;
+            if(stop == false)
+            {
+                
+            }
         }
 
         // Clears track when dialog is confirmed
@@ -102,17 +119,12 @@ namespace RunApp
             alert.Show();
         }
 
-        // Touch Event
-        public void touch(object sender, TouchEventArgs tea)
-        {
-            detector.OnTouchEvent(tea.Event);
-        }
-
         // Gesture detector interface methods
         public bool OnScale(ScaleGestureDetector detector)
         {
-            this.scale *= detector.ScaleFactor;
-            this.Invalidate();
+            scale *= detector.ScaleFactor;
+            scale = Math.Max(1f, Math.Min(scale, 6f));
+            Invalidate();
             return true;
         }
 
@@ -129,36 +141,37 @@ namespace RunApp
         // Action when Location has changed
         public void OnLocationChanged(Location loc)
         {
-            double north = loc.Latitude;
-            double east = loc.Longitude;
-            string info = $"{north} Latitude, {east} Longitude";
+            north = loc.Latitude;
+            east = loc.Longitude;
+            info = $"{north} Latitude, {east} Longitude";
         }
 
         // Necessary methods for Location interface
         public void OnProviderDisabled(string provider)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnProviderEnabled(string provider)
         {
-            throw new NotImplementedException();
+           
         }
 
         public void OnStatusChanged(string provider, [GeneratedEnum] Availability status, Bundle extras)
         {
-            throw new NotImplementedException();
+            
         }
 
         // Sensor interface methods
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnSensorChanged(SensorEvent e)
         {
-            throw new NotImplementedException();
+            angle = e.Values[0];
+            Invalidate();
         }
     }
 }
