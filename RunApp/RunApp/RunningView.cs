@@ -18,6 +18,7 @@ namespace RunApp
     // Custom View for the App
     class RunningView : View , ILocationListener, ISensorEventListener
     {
+        // Managers for location and sensor
         LocationManager lm;
         SensorManager sm;
 
@@ -30,15 +31,21 @@ namespace RunApp
         PointF centre;
         float midx, midy;
         
+        // Variables for touch-event
         PointF v1, v2;
         PointF s1, s2;
         float scale;
         float oldScale;
         bool pinching = false;
+        PointF dragstart;
 
         float angle;
+        float ax;
+        float ay;
 
         string info;
+
+        List<PointF> track = new List<PointF>(); // List for the drawn points for tracking
 
         AlertDialog.Builder alert;
 
@@ -48,11 +55,11 @@ namespace RunApp
             sm = (SensorManager)c.GetSystemService(Context.SensorService);
             sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
             
-           /*lm = (LocationManager)c.GetSystemService(Context.LocationService);
+           lm = (LocationManager)c.GetSystemService(Context.LocationService);
             Criteria crit = new Criteria();
             crit.Accuracy = Accuracy.Fine;
             IList<string> alp = lm.GetProviders(crit, true);
-            if(alp != null)
+            if(alp != null && alp.Count >0)
             {
                 try
                 {
@@ -61,9 +68,9 @@ namespace RunApp
                 }
                 catch(ArgumentOutOfRangeException e)
                 {
-
+                    
                 }
-            }*/
+            }
 
             BitmapFactory.Options opties = new BitmapFactory.Options();
 
@@ -74,6 +81,10 @@ namespace RunApp
             
             this.Touch += touch;
 
+            centre = new PointF(139000, 455500);
+            ax = 0;
+            ay = 0;
+            
             alert = new AlertDialog.Builder(c);
         }
 
@@ -84,50 +95,7 @@ namespace RunApp
             return (float)Math.Sqrt(a * a + b * b);
         }
 
-        // Touch Event
-        public void touch(object sender, TouchEventArgs tea)
-        {
-            v1 = new PointF(tea.Event.GetX(0), tea.Event.GetY(0));
-            if(tea.Event.PointerCount == 2)
-            {
-                v2 = new PointF(tea.Event.GetX(1), tea.Event.GetY(1));
-                if(tea.Event.Action == MotionEventActions.Pointer2Down)
-                {
-                    s1 = v1;
-                    s2 = v2;
-                    oldScale = scale;
-                }
-                pinching = true;
-                float dist = Afstand(v1, v2);
-                float start = Afstand(s1, s2);
-                if (dist != 0 && start != 0)
-                {
-                    float factor = dist / start;
-                    scale = oldScale * factor;
-                    /*if (scale < 1f)
-                        scale = 1f;
-                    if (scale > 10f)
-                        scale = 10f;
-                    Invalidate();*/
-                }
-            }
-            else if (!pinching)
-            {                
-                float x = tea.Event.GetX();
-                float sx = x - v1.X;
-                float px = sx / scale;
-                float ax = (float) (px / 0.4);
-                centre.X -= ax;
-
-                float y = tea.Event.GetY();
-                float sy = y - v1.Y;
-                float py = sy / scale;
-                float ay = (float)(py / 0.4);
-                centre.Y -= ay;
-
-                Invalidate();
-            }
-        }
+       
 
         // Action when Location has changed
         public void OnLocationChanged(Location loc)
@@ -142,44 +110,116 @@ namespace RunApp
 
         protected override void OnDraw(Canvas canvas)
         {
-            base.OnDraw(canvas);
-
-            centre = new PointF(138300, 454300);
-            midx = (float)((centre.X - 136000) * 0.4);
-            midy = (float)(-(centre.Y - 458000) * 0.4);
+            base.OnDraw(canvas);       
 
             if(scale == 0)
                 scale = Math.Min(((float)this.Width) / this.map.Width, ((float)this.Height) / this.map.Height);
 
             Paint verf = new Paint();
-
+            
             mat = new Matrix();
-                        
-            // mat.PostTranslate(-this.map.Width / 2, -this.map.Height / 2);
-            mat.PostTranslate(midx, midy);
+
+            midx = (float)((centre.X - 136000) * 0.4);
+            midy = (float)(-(centre.Y - 458000) * 0.4);
+
+            mat.PostTranslate(-(map.Width / 2 - ax), -(map.Height / 2 - ay));
+            // mat.PostTranslate(-midx, -midy);
             mat.PostScale(scale, scale);
-            //mat.PostTranslate(Width / 2, Height / 2);
-         
+            mat.PostTranslate(Width / 2, Height / 2);
+            
             canvas.DrawBitmap(map, mat, verf);
             
-           /* float ax = current.X - centre.X;
-            float px = (float) (ax * 0.4);
-            float sx = px * scale;
-            float x = Width / 2 + sx;
 
-            float ay = current.Y - centre.Y;
-            float py = (float)(ay * 0.4);
-            float sy = py * scale;
-            float y = Height / 2 + sy;
+            if (current != null)
+            {
+                float ax = current.X - centre.X;
+                float px = (float)(ax * 0.4);
+                float sx = px * scale;
+                float x = Width / 2 + sx;
 
-            Matrix mat2 = new Matrix();
+                float ay = current.Y - centre.Y;
+                float py = (float)(ay * 0.4);
+                float sy = py * scale;
+                float y = Height / 2 + sy;
 
-            mat2.PostTranslate(x, y);
-            mat2.PostScale(scale, scale);
-            mat2.PostRotate(-this.angle);
-            mat2.PostTranslate(Width / 2, Height / 2);
 
-            canvas.DrawBitmap(cursor, mat2, verf);*/
+                Matrix mat2 = new Matrix();
+
+                mat2.PostTranslate(x, y);
+                mat2.PostScale(scale, scale);
+                mat2.PostRotate(-angle);
+                mat2.PostTranslate(Width / 2, Height / 2);
+
+                canvas.DrawBitmap(cursor, mat2, verf);
+            }
+        }
+
+        // Touch Event
+        public void touch(object sender, TouchEventArgs tea)
+        {
+            v1 = new PointF(tea.Event.GetX(0), tea.Event.GetY(0));
+            if (tea.Event.PointerCount == 2)
+            {
+                v2 = new PointF(tea.Event.GetX(1), tea.Event.GetY(1));
+                if (tea.Event.Action == MotionEventActions.Pointer2Down)
+                {
+                    s1 = v1;
+                    s2 = v2;
+                    oldScale = scale;
+                }
+                pinching = true;
+                float dist = Afstand(v1, v2);
+                float start = Afstand(s1, s2);
+                if (dist != 0 && start != 0)
+                {
+                    float factor = dist / start;
+                    scale = oldScale * factor;
+                    /*if (scale < 1f)
+                        scale = 1f;
+                    if (scale > 15f)
+                        scale = 15f;*/
+                    Invalidate();
+                }
+                
+            }
+            else if (!pinching)
+            {
+                // Documents the start point when a finger hits the screen
+                if (tea.Event.Action == MotionEventActions.Down)
+                    dragstart = new PointF(tea.Event.GetX(), tea.Event.GetY());
+
+                // Records the coordinates while finger in moving on screen
+                if (tea.Event.Action == MotionEventActions.Move)
+                {
+                    
+                    float x = tea.Event.GetX();
+                    float sx = x - dragstart.X;
+                    float px = sx / scale;
+                    ax = (float)(px / 0.4);
+                    centre.X -= ax;
+
+                    /*if (centre.X > 142000)
+                        centre.X = 142000;
+                    if (centre.X < 136000)
+                        centre.X = 136000;*/
+
+                    float y = tea.Event.GetY();
+                    float sy = y - dragstart.Y;
+                    float py = -sy / scale;
+                    ay = (float)(-(py) / 0.4);
+                    centre.Y -= ay;
+
+                    /*if (centre.Y > 458000)
+                        centre.Y = 458000;
+                    if (centre.Y < 453000)
+                        centre.Y = 453000;*/
+
+                    Invalidate();
+                }
+            }
+            // Resets the pinching bool when finger lifts from screen
+            if (tea.Event.Action == MotionEventActions.Up)
+                pinching = false;
         }
 
         // Centers map on your location
@@ -215,7 +255,7 @@ namespace RunApp
             alert.SetCancelable(true);
             alert.SetPositiveButton("Yes", ((object o, DialogClickEventArgs e) =>
             {
-                // Delete track
+                track.Clear(); // Clears the list of drawn lines for the track
             }));
             alert.SetNegativeButton("No", ((object o, DialogClickEventArgs e) =>
             {
