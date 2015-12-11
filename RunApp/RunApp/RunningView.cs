@@ -48,7 +48,7 @@ namespace RunApp
             sm = (SensorManager)c.GetSystemService(Context.SensorService);
             sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
             
-           /* lm = (LocationManager)c.GetSystemService(Context.LocationService);
+           /*lm = (LocationManager)c.GetSystemService(Context.LocationService);
             Criteria crit = new Criteria();
             crit.Accuracy = Accuracy.Fine;
             IList<string> alp = lm.GetProviders(crit, true);
@@ -104,8 +104,11 @@ namespace RunApp
                 {
                     float factor = dist / start;
                     scale = oldScale * factor;
-                    scale = Math.Max(1f, Math.Min(scale, 10f));
-                    Invalidate();
+                    /*if (scale < 1f)
+                        scale = 1f;
+                    if (scale > 10f)
+                        scale = 10f;
+                    Invalidate();*/
                 }
             }
             else if (!pinching)
@@ -121,7 +124,20 @@ namespace RunApp
                 float py = sy / scale;
                 float ay = (float)(py / 0.4);
                 centre.Y -= ay;
+
+                Invalidate();
             }
+        }
+
+        // Action when Location has changed
+        public void OnLocationChanged(Location loc)
+        {
+            north = (float)loc.Latitude;
+            east = (float)loc.Longitude;
+            info = $"{north} Latitude, {east} Longitude";
+            PointF geo = new PointF(north, east);
+            current = Projectie.Geo2RD(geo);
+            Invalidate();
         }
 
         protected override void OnDraw(Canvas canvas)
@@ -129,8 +145,8 @@ namespace RunApp
             base.OnDraw(canvas);
 
             centre = new PointF(138300, 454300);
-            midx = (float) ((centre.X - 136000) * 0.4);
-            midy = (float) -((centre.Y - 458000) * 0.4);
+            midx = (float)((centre.X - 136000) * 0.4);
+            midy = (float)(-(centre.Y - 458000) * 0.4);
 
             if(scale == 0)
                 scale = Math.Min(((float)this.Width) / this.map.Width, ((float)this.Height) / this.map.Height);
@@ -138,21 +154,32 @@ namespace RunApp
             Paint verf = new Paint();
 
             mat = new Matrix();
+                        
+            // mat.PostTranslate(-this.map.Width / 2, -this.map.Height / 2);
+            mat.PostTranslate(midx, midy);
+            mat.PostScale(scale, scale);
+            //mat.PostTranslate(Width / 2, Height / 2);
+         
+            canvas.DrawBitmap(map, mat, verf);
+            
+           /* float ax = current.X - centre.X;
+            float px = (float) (ax * 0.4);
+            float sx = px * scale;
+            float x = Width / 2 + sx;
+
+            float ay = current.Y - centre.Y;
+            float py = (float)(ay * 0.4);
+            float sy = py * scale;
+            float y = Height / 2 + sy;
+
             Matrix mat2 = new Matrix();
 
-            mat2.PostTranslate(-this.cursor.Width / 2, -this.cursor.Height / 2);
+            mat2.PostTranslate(x, y);
             mat2.PostScale(scale, scale);
             mat2.PostRotate(-this.angle);
             mat2.PostTranslate(Width / 2, Height / 2);
-            
-            mat.PostTranslate(-this.map.Width / 2, -this.map.Height / 2);
-            // mat.PostTranslate(midx, midy);
-            mat.PostScale(this.scale, this.scale);
-            mat.PostTranslate(this.Width / 2, this.Height / 2);
 
-          
-            canvas.DrawBitmap(map, mat, verf);
-            canvas.DrawBitmap(cursor, mat2, verf);
+            canvas.DrawBitmap(cursor, mat2, verf);*/
         }
 
         // Centers map on your location
@@ -195,17 +222,6 @@ namespace RunApp
                 // Do nothing
             }));
             alert.Show();
-        }
-
-        // Action when Location has changed
-        public void OnLocationChanged(Location loc)
-        {
-            north = (float) loc.Latitude;
-            east = (float) loc.Longitude;
-            info = $"{north} Latitude, {east} Longitude";
-            PointF geo = new PointF(north, east);
-            current = Projectie.Geo2RD(geo);
-            Invalidate();
         }
 
         // Necessary methods for Location interface
