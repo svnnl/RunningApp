@@ -51,25 +51,20 @@ namespace RunApp
 
         // Constructor
         public RunningView(Context c) : base(c)
-        {               
+        {   
+            // Sensormanager for compass            
             sm = (SensorManager)c.GetSystemService(Context.SensorService);
             sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
             
-           lm = (LocationManager)c.GetSystemService(Context.LocationService);
+            // Locationmanager for the GPS
+            lm = (LocationManager)c.GetSystemService(Context.LocationService);
             Criteria crit = new Criteria();
             crit.Accuracy = Accuracy.Fine;
             IList<string> alp = lm.GetProviders(crit, true);
             if(alp != null && alp.Count >0)
-            {
-                try
-                {
-                    string lp = alp[0];
-                    lm.RequestLocationUpdates(lp, 0, 0, this);
-                }
-                catch(ArgumentOutOfRangeException e)
-                {
-                    
-                }
+            {            
+                string lp = alp[0];
+                lm.RequestLocationUpdates(lp, 0, 0, this);               
             }
 
             BitmapFactory.Options opties = new BitmapFactory.Options();
@@ -79,7 +74,7 @@ namespace RunApp
 
             opties.InScaled = false;
             
-            this.Touch += touch;
+           this.Touch += touch;
 
             centre = new PointF(139000, 455500);
             ax = 0;
@@ -115,30 +110,31 @@ namespace RunApp
             if(scale == 0)
                 scale = Math.Min(((float)this.Width) / this.map.Width, ((float)this.Height) / this.map.Height);
 
+            // Drawing the map
             Paint verf = new Paint();
-            
             mat = new Matrix();
 
-            midx = (float)((centre.X - 136000) * 0.4);
-            midy = (float)(-(centre.Y - 458000) * 0.4);
+            midx = (centre.X - 136000) * 0.4f;
+            midy = -(centre.Y - 458000) * 0.4f;
 
-            mat.PostTranslate(-(map.Width / 2 - ax), -(map.Height / 2 - ay));
-            // mat.PostTranslate(-midx, -midy);
+            //mat.PostTranslate(-(map.Width / 2 - ax), -(map.Height / 2 - ay));
+            
+            mat.PostTranslate(-midx, -midy);
             mat.PostScale(scale, scale);
             mat.PostTranslate(Width / 2, Height / 2);
-            
+          
             canvas.DrawBitmap(map, mat, verf);
             
-
+            // Drawing the cursor on your location
             if (current != null)
             {
                 float ax = current.X - centre.X;
-                float px = (float)(ax * 0.4);
+                float px = ax * 0.4f;
                 float sx = px * scale;
                 float x = Width / 2 + sx;
 
-                float ay = current.Y - centre.Y;
-                float py = (float)(ay * 0.4);
+                float ay = centre.Y - current.Y;
+                float py = ay * 0.4f;
                 float sy = py * scale;
                 float y = Height / 2 + sy;
 
@@ -150,12 +146,13 @@ namespace RunApp
                 mat2.PostRotate(-angle);
                 mat2.PostTranslate(Width / 2, Height / 2);
 
-                canvas.DrawBitmap(cursor, mat2, verf);
+                canvas.DrawCircle(x, y, 10, verf);
+                // canvas.DrawBitmap(cursor, mat2, verf);
             }
         }
 
         // Touch Event
-        public void touch(object sender, TouchEventArgs tea)
+       public void touch(object sender, TouchEventArgs tea)
         {
             v1 = new PointF(tea.Event.GetX(0), tea.Event.GetY(0));
             if (tea.Event.PointerCount == 2)
@@ -174,10 +171,10 @@ namespace RunApp
                 {
                     float factor = dist / start;
                     scale = oldScale * factor;
-                    /*if (scale < 1f)
+                    if (scale < 1f)
                         scale = 1f;
-                    if (scale > 15f)
-                        scale = 15f;*/
+                    if (scale > 40f)
+                        scale = 40f;
                     Invalidate();
                 }
                 
@@ -195,8 +192,9 @@ namespace RunApp
                     float x = tea.Event.GetX();
                     float sx = x - dragstart.X;
                     float px = sx / scale;
-                    ax = (float)(px / 0.4);
-                    centre.X -= ax;
+                    ax = (px / 0.4f);
+                    //dragstart.X = x;
+                    //centre.X = centre.X - ax;
 
                     /*if (centre.X > 142000)
                         centre.X = 142000;
@@ -205,11 +203,12 @@ namespace RunApp
 
                     float y = tea.Event.GetY();
                     float sy = y - dragstart.Y;
-                    float py = -sy / scale;
-                    ay = (float)(-(py) / 0.4);
-                    centre.Y -= ay;
+                    float py = sy / scale;
+                    ay = (py) / 0.4f;
+                    //dragstart.Y = y;
+                    //centre.Y = centre.Y - ay;
 
-                    /*if (centre.Y > 458000)
+                   /* if (centre.Y > 458000)
                         centre.Y = 458000;
                     if (centre.Y < 453000)
                         centre.Y = 453000;*/
@@ -220,7 +219,7 @@ namespace RunApp
             // Resets the pinching bool when finger lifts from screen
             if (tea.Event.Action == MotionEventActions.Up)
                 pinching = false;
-        }
+        } 
 
         // Centers map on your location
         public void centreMap(object sender, EventArgs ea)
@@ -264,6 +263,12 @@ namespace RunApp
             alert.Show();
         }
 
+        public void OnSensorChanged(SensorEvent e)
+        {
+            angle = e.Values[0];
+            Invalidate();
+        }
+
         // Necessary methods for Location interface
         public void OnProviderDisabled(string provider)
         {
@@ -284,12 +289,6 @@ namespace RunApp
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         {
             
-        }
-
-        public void OnSensorChanged(SensorEvent e)
-        {
-            angle = e.Values[0];
-            Invalidate();
         }
     }
 }
