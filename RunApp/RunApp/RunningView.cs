@@ -110,14 +110,15 @@ namespace RunApp
 
         // Drawing the map
             Paint verf = new Paint();
+            verf.Color = Color.White;
             mat = new Matrix();
 
             midx = (centre.X - 136000) * 0.4f;
             midy = -(centre.Y - 458000) * 0.4f;
 
-            mat.PostTranslate(-(map.Width / 2 - ax), -(map.Height / 2 - ay));
+            // mat.PostTranslate(-(map.Width / 2 - ax), -(map.Height / 2 - ay));
             
-            // mat.PostTranslate(-midx, -midy);
+            mat.PostTranslate(-midx, -midy);
             mat.PostScale(scale, scale);
             mat.PostTranslate(Width / 2, Height / 2);
           
@@ -139,7 +140,7 @@ namespace RunApp
 
                 Matrix mat2 = new Matrix();
 
-                mat2.PostTranslate(x, y);
+                mat2.PostTranslate(-x, -y);
                 mat2.PostScale(scale, scale);
                 mat2.PostRotate(-angle);
                 mat2.PostTranslate(Width / 2, Height / 2);

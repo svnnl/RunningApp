@@ -78,8 +78,8 @@ namespace RunApp
 			superstack.AddView (status);
 			superstack.AddView (runv);
 
-			// Set our view from the LinearLayout
-			SetContentView (superstack);
+            // Set our view from the LinearLayout
+            SetContentView(superstack);
 		}
 	}
 }
