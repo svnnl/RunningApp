@@ -31,8 +31,7 @@ namespace RunApp
             {
                 // Do nothing
             });
-            alert.Show();
-            
+            alert.Show();            
         }
 
         protected override void OnCreate (Bundle bundle)
@@ -64,7 +63,7 @@ namespace RunApp
 			// The updated location status
 			status = new TextView (this);
             status.SetTextColor(Color.Black);
-            status.Text = "Calculating location....";
+            status.Text = "Waiting for GPS signal...";
 
 			// Layout for horizontal oriented buttons
 			buttons = new LinearLayout (this);
