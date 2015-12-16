@@ -38,8 +38,6 @@ namespace RunApp
 		PointF dragstart;
 
 		float angle;
-		float ax;
-		float ay;
 
 		List<PointF> track = new List<PointF> ();   // List for the drawn points for tracking
 
@@ -124,11 +122,17 @@ namespace RunApp
 			mat.PostScale (scale, scale);
 		    mat.PostTranslate (Width / 2, Height / 2);
           
-			canvas.DrawBitmap (this.map, mat, verf);
+			canvas.DrawBitmap (map, mat, verf);
 			canvas.Restore ();
-            
-			// Drawing your location
-			if (current != null)
+
+            // Drawing the track
+            foreach (PointF point in track)
+            {
+                canvas.DrawPoint(point.X, point.Y, verf);
+            }
+
+            // Drawing your location
+            if (current != null)
             {
 				float ax = current.X - centre.X;
 				float px = ax * 0.4f;
@@ -138,25 +142,20 @@ namespace RunApp
 				float ay = centre.Y - current.Y;
 				float py = ay * 0.4f;
 				float sy = py * scale;
-				float y = Height / 2 + sy;
-
+                float y = Height / 2 + sy;
 
 				Matrix mat2 = new Matrix ();
 
-				mat2.PostTranslate (-x, -y);
-				mat2.PostScale (scale, scale);
-				mat2.PostRotate (-angle);
+                mat2.PostTranslate(-cursor.Width / 2, -cursor.Height / 2);
+
+                mat2.PostTranslate(-x, -y);
+				//mat2.PostScale (scale, scale);
+				//mat2.PostRotate (-angle);
 				mat2.PostTranslate (Width / 2, Height / 2);
 
 				canvas.DrawCircle(x, y, 20, verf);
-				// canvas.DrawBitmap (cursor, mat2, verf);
+				canvas.DrawBitmap (cursor, mat2, verf);
 			}
-
-            // Drawing the track
-			foreach(PointF point in track)
-            {
-                canvas.DrawPoint(point.X, point.Y, verf);
-            }
 		}
 
 		// Touch Event
@@ -197,30 +196,30 @@ namespace RunApp
 					float x = tea.Event.GetX ();
 					float sx = x - dragstart.X;
 					float px = sx / scale;
-					ax = (px / 0.4f);				
-					centre.X = centre.X - ax;
+                    float ax = px / 0.4f;				
+					centre.X -= ax;
                     // Remember the X-coordinate for the next drag movement
                     dragstart.X = x;
 
-                    // Limitations of dragging
-                    /*if (centre.X > 152000)
-                        centre.X = 152000;
-                    if (centre.X < 138000)
-                        centre.X = 138000;*/
+                    // Limitations of horizontal dragging
+                    if (centre.X > 141665)
+                        centre.X = 141665;
+                    if (centre.X < 136335)
+                        centre.X = 136335;
 
                     float y = tea.Event.GetY ();
 					float sy = y - dragstart.Y;
 					float py = sy / scale;
-					ay = (py) / 0.4f;
-					centre.Y = centre.Y + ay;
+					float ay = py / 0.4f;
+					centre.Y += ay;
                     // Remember the Y-coordinate for the next drag movement
                     dragstart.Y = y;
 
-                    // Limitations of dragging
-                    /*if (centre.Y > 454000)
-                        centre.Y = 454000;
-                    if (centre.Y < 447000)
-                        centre.Y = 447000;*/
+                    // Limitations of vertical dragging
+                    if (centre.Y > 457575)
+                        centre.Y = 457575;
+                    if (centre.Y < 453425)
+                        centre.Y = 453425;
 
                     Invalidate ();
 				}
