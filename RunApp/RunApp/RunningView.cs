@@ -176,7 +176,8 @@ namespace RunApp
 				pinching = true;
 				float dist = Afstand (v1, v2);
 				float start = Afstand (s1, s2);
-				if (dist != 0 && start != 0) {
+				if (dist != 0 && start != 0)
+                {
 					float factor = dist / start;
 					scale = oldScale * factor;
 					Invalidate ();
