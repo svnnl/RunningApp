@@ -64,6 +64,7 @@ namespace RunApp
 			// The updated location status
 			status = new TextView (this);
             status.SetTextColor(Color.White);
+            status.Text = "Locatie: ";
 
 			// Layout for horizontal oriented buttons
 			buttons = new LinearLayout (this);

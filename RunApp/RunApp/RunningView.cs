@@ -40,11 +40,9 @@ namespace RunApp
 		float angle;
 		float ax;
 		float ay;
+        float x, y;
 
-		string info;
-
-		List<PointF> track = new List<PointF> ();
-		// List for the drawn points for tracking
+		List<PointF> track = new List<PointF> ();   // List for the drawn points for tracking
 
 		AlertDialog.Builder alert;
 
@@ -66,26 +64,26 @@ namespace RunApp
 			}
 
 			BitmapFactory.Options opties = new BitmapFactory.Options ();
+            opties.InScaled = false;
 
-			map = BitmapFactory.DecodeResource (c.Resources, Resource.Drawable.Utrecht, opties);            
+            // Storing the images in bitmaps
+            map = BitmapFactory.DecodeResource (c.Resources, Resource.Drawable.Utrecht, opties);            
 			cursor = BitmapFactory.DecodeResource (c.Resources, Resource.Drawable.cursor, opties);
-
-			opties.InScaled = false;
-            
+         
 			this.Touch += touch;
 
-			centre = new PointF (139000, 455000);
+			centre = new PointF (139000, 455000); // Centre of the map
 			            
 			alert = new AlertDialog.Builder (c);
 		}
 
+        // Calculates the distance between two points
 		static float Afstand (PointF p1, PointF p2)
 		{
 			float a = p1.X - p2.X;
 			float b = p1.Y - p2.Y;
 			return (float)Math.Sqrt (a * a + b * b);
 		}
-
        
 
 		// Action when Location has changed
@@ -93,7 +91,7 @@ namespace RunApp
 		{
 			north = (float)loc.Latitude;
 			east = (float)loc.Longitude;
-			info = $"{north} Latitude, {east} Longitude";		// Doesn't work in Xamarin
+			string info = $"{north} Latitude, {east} Longitude";		// Doesn't work in Xamarin
             RunningApp.status.Text = info;
 			PointF geo = new PointF (north, east);
 			current = Projectie.Geo2RD (geo);
@@ -107,10 +105,10 @@ namespace RunApp
 			if (scale == 0)
 				scale = Math.Min (((float)this.Width) / this.map.Width, ((float)this.Height) / this.map.Height);
 
-            if (scale < 0.4f)
-                scale = 0.4f;
-            if (scale > 5f)
-                scale = 5f;
+            if (scale < 1f)
+                scale = 1f;
+            if (scale > 4f)
+                scale = 4f;
 
             // Drawing the map
             Paint verf = new Paint ();
@@ -123,23 +121,24 @@ namespace RunApp
             canvas.Save();
 
 			mat.PostTranslate (-midx, -midy);
-			mat.PostScale (this.scale, this.scale);
-		    mat.PostTranslate (this.Width / 2, this.Height / 2);
+			mat.PostScale (scale, scale);
+		    mat.PostTranslate (Width / 2, Height / 2);
           
 			canvas.DrawBitmap (this.map, mat, verf);
 			canvas.Restore ();
             
 			// Drawing the cursor on your location
-			if (current != null) {
+			if (current != null)
+            {
 				float ax = current.X - centre.X;
 				float px = ax * 0.4f;
 				float sx = px * scale;
-				float x = Width / 2 + sx;
+				x = Width / 2 + sx;
 
 				float ay = centre.Y - current.Y;
 				float py = ay * 0.4f;
 				float sy = py * scale;
-				float y = Height / 2 + sy;
+				y = Height / 2 + sy;
 
 
 				Matrix mat2 = new Matrix ();
@@ -149,8 +148,8 @@ namespace RunApp
 				mat2.PostRotate (-angle);
 				mat2.PostTranslate (Width / 2, Height / 2);
 
-				// canvas.DrawCircle(x, y, 10, verf);
-				canvas.DrawBitmap (cursor, mat2, verf);
+				canvas.DrawCircle(x, y, 20, verf);
+				// canvas.DrawBitmap (cursor, mat2, verf);
 			}
 
             // Drawing the track
@@ -165,9 +164,11 @@ namespace RunApp
 		public void touch (object sender, TouchEventArgs tea)
 		{
 			v1 = new PointF (tea.Event.GetX (0), tea.Event.GetY (0));
-			if (tea.Event.PointerCount == 2) {
+			if (tea.Event.PointerCount == 2)
+            {
 				v2 = new PointF (tea.Event.GetX (1), tea.Event.GetY (1));
-				if (tea.Event.Action == MotionEventActions.Pointer2Down) {
+				if (tea.Event.Action == MotionEventActions.Pointer2Down)
+                {
 					s1 = v1;
 					s2 = v2;
 					oldScale = scale;
@@ -181,13 +182,15 @@ namespace RunApp
 					Invalidate ();
 				}
                 
-			} else if (!pinching) {
+			} else if (!pinching)
+            {
 				// Documents the start point when a finger hits the screen
 				if (tea.Event.Action == MotionEventActions.Down)
 					dragstart = new PointF (tea.Event.GetX (), tea.Event.GetY ());
 
 				// Records the coordinates while finger in moving on screen
-				if (tea.Event.Action == MotionEventActions.Move) {
+				if (tea.Event.Action == MotionEventActions.Move)
+                {
                     
 					float x = tea.Event.GetX ();
 					float sx = x - dragstart.X;
@@ -198,10 +201,10 @@ namespace RunApp
                     dragstart.X = x;
 
                     // Limitations of dragging
-                    if (centre.X > 142000)
-                        centre.X = 142000;
-                    if (centre.X < 136000)
-                        centre.X = 136000;
+                    /*if (centre.X > 152000)
+                        centre.X = 152000;
+                    if (centre.X < 138000)
+                        centre.X = 138000;*/
 
                     float y = tea.Event.GetY ();
 					float sy = y - dragstart.Y;
@@ -211,11 +214,11 @@ namespace RunApp
                     // Remember the Y-coordinate for the next drag movement
                     dragstart.Y = y;
 
-                    // Limitations of draggin
-                    if (centre.Y > 458000)
-                        centre.Y = 458000;
-                    if (centre.Y < 453000)
-                        centre.Y = 453000;
+                    // Limitations of dragging
+                    /*if (centre.Y > 454000)
+                        centre.Y = 454000;
+                    if (centre.Y < 447000)
+                        centre.Y = 447000;*/
 
                     Invalidate ();
 				}
@@ -228,9 +231,8 @@ namespace RunApp
 		// Centers map on your location
 		public void centreMap (object sender, EventArgs ea)
 		{
-			// midx = x;
-			// midy = y;
-			// Invalidate();
+            centre = new PointF(current.X, current.Y);
+			Invalidate();
 		}
 
 		// Starts route when Start button is clicked
@@ -239,11 +241,13 @@ namespace RunApp
 			Button startButton = (Button)sender;
 			string buttonText = startButton.Text;
 
-			if (buttonText == "Start") {
+			if (buttonText == "Start")
+            {
 				// Code for tracking 
 
 				startButton.Text = "Stop";
-			} else {
+			} else
+            {
 				// Do nothing
 				startButton.Text = "Start";
 			}
@@ -254,13 +258,15 @@ namespace RunApp
 		public void clearMap (object sender, EventArgs ea)
 		{
 			alert.SetMessage ("Are you sure you want to delete your track?");
-			alert.SetCancelable (true);
-			alert.SetPositiveButton ("Yes", (object o, DialogClickEventArgs e) => {
+			alert.SetCancelable (false);
+			alert.SetPositiveButton ("Yes", (object o, DialogClickEventArgs e) => 
+            {
 				track.Clear (); // Clears the list of drawn lines for the track
 			});
-			alert.SetNegativeButton ("No", (object o, DialogClickEventArgs e) => {
-				// Do nothing
-			});
+            alert.SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
+            {
+                // Do nothing
+            });
 			alert.Show ();
 		}
 
