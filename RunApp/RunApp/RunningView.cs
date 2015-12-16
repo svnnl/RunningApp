@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic; // Vanwege IList
-using System.Linq;
-using System.Text;
 
 using Android.App;
 using Android.Content;
@@ -64,7 +62,7 @@ namespace RunApp
             if(alp != null && alp.Count >0)
             {            
                 string lp = alp[0];
-                lm.RequestLocationUpdates(lp, 0, 0, this);               
+                lm.RequestLocationUpdates(lp, 500, 10, this);               
             }
 
             BitmapFactory.Options opties = new BitmapFactory.Options();
@@ -110,22 +108,22 @@ namespace RunApp
             if(scale == 0)
                 scale = Math.Min(((float)this.Width) / this.map.Width, ((float)this.Height) / this.map.Height);
 
-            // Drawing the map
+        // Drawing the map
             Paint verf = new Paint();
             mat = new Matrix();
 
             midx = (centre.X - 136000) * 0.4f;
             midy = -(centre.Y - 458000) * 0.4f;
 
-            //mat.PostTranslate(-(map.Width / 2 - ax), -(map.Height / 2 - ay));
+            mat.PostTranslate(-(map.Width / 2 - ax), -(map.Height / 2 - ay));
             
-            mat.PostTranslate(-midx, -midy);
+            // mat.PostTranslate(-midx, -midy);
             mat.PostScale(scale, scale);
             mat.PostTranslate(Width / 2, Height / 2);
           
             canvas.DrawBitmap(map, mat, verf);
             
-            // Drawing the cursor on your location
+        // Drawing the cursor on your location
             if (current != null)
             {
                 float ax = current.X - centre.X;
@@ -146,12 +144,18 @@ namespace RunApp
                 mat2.PostRotate(-angle);
                 mat2.PostTranslate(Width / 2, Height / 2);
 
-                canvas.DrawCircle(x, y, 10, verf);
-                // canvas.DrawBitmap(cursor, mat2, verf);
+                // canvas.DrawCircle(x, y, 10, verf);
+                canvas.DrawBitmap(cursor, mat2, verf);
             }
+
+        // Drawing the track
+           /* foreach(PointF point in track)
+            {
+                canvas.DrawPoint(point.X, point.Y, verf);
+            }*/
         }
 
-        // Touch Event
+    // Touch Event
        public void touch(object sender, TouchEventArgs tea)
         {
             v1 = new PointF(tea.Event.GetX(0), tea.Event.GetY(0));
@@ -171,10 +175,10 @@ namespace RunApp
                 {
                     float factor = dist / start;
                     scale = oldScale * factor;
-                    if (scale < 1f)
-                        scale = 1f;
-                    if (scale > 40f)
-                        scale = 40f;
+                    if (scale < 4f)
+                        scale = 4f;
+                    if (scale > 100f)
+                        scale = 100f;
                     Invalidate();
                 }
                 
@@ -216,7 +220,7 @@ namespace RunApp
                     Invalidate();
                 }
             }
-            // Resets the pinching bool when finger lifts from screen
+        // Resets the pinching bool when finger lifts from screen
             if (tea.Event.Action == MotionEventActions.Up)
                 pinching = false;
         } 
@@ -224,7 +228,9 @@ namespace RunApp
         // Centers map on your location
         public void centreMap(object sender, EventArgs ea)
         {
-
+            // midx = x;
+            // midy = y;
+            // Invalidate();
         }
 
         // Starts route when Start button is clicked
@@ -252,14 +258,14 @@ namespace RunApp
         {
             alert.SetMessage("Are you sure you want to delete your track?");
             alert.SetCancelable(true);
-            alert.SetPositiveButton("Yes", ((object o, DialogClickEventArgs e) =>
+            alert.SetPositiveButton("Yes", (object o, DialogClickEventArgs e) =>
             {
                 track.Clear(); // Clears the list of drawn lines for the track
-            }));
-            alert.SetNegativeButton("No", ((object o, DialogClickEventArgs e) =>
+            });
+            alert.SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
             {
                 // Do nothing
-            }));
+            });
             alert.Show();
         }
 

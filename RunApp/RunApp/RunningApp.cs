@@ -1,14 +1,11 @@
-﻿using System;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
-using Android.Runtime;
-using Android.Views;
 using Android.Widget;
 using Android.OS;
 
 namespace RunApp
 {
-	[Activity (Label = "Running App", MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity (Label = "5532795 Running App", MainLauncher = true, Icon = "@drawable/icon")]
 	public class RunningApp : Activity
 	{
 		// Declaring variables
@@ -16,8 +13,28 @@ namespace RunApp
 		TextView status;
 		Button centre, start, clear;
 		LinearLayout buttons, superstack;
+        AlertDialog.Builder alert;
 
-		protected override void OnCreate (Bundle bundle)
+        // Asks if you really want to close the app when pressing 'Back' button
+        public override void OnBackPressed()
+        {
+            alert = new AlertDialog.Builder(this);
+            alert.SetTitle("Quit");
+            alert.SetMessage("Are you sure you want to exit?");
+            alert.SetCancelable(false);
+            alert.SetPositiveButton("Yes", (object sender, DialogClickEventArgs ea) =>
+            {
+                Finish(); 
+            });
+            alert.SetNegativeButton("No", (object sender, DialogClickEventArgs ea) =>
+            {
+                // Do nothing
+            });
+            alert.Show();
+            
+        }
+
+        protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 
