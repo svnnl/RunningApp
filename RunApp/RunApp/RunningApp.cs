@@ -6,7 +6,7 @@ using Android.Graphics;
 
 namespace RunApp
 {
-	[Activity (Label = "5532795 RunForrest", MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity (Label = "5532795 RunForrest", MainLauncher = true, Icon = "@drawable/run")]
 	public class RunningApp : Activity
 	{
 		// Declaring variables
