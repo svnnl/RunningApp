@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.Widget;
 using Android.OS;
+using Android.Graphics;
 
 namespace RunApp
 {
@@ -10,8 +11,8 @@ namespace RunApp
 	{
 		// Declaring variables
 		RunningView runv;
-		TextView status;
-		Button centre, start, clear;
+		public static TextView status;
+		public Button centre, start, clear;
 		LinearLayout buttons, superstack;
         AlertDialog.Builder alert;
 
@@ -62,7 +63,7 @@ namespace RunApp
 
 			// The updated location status
 			status = new TextView (this);
-            status.Text = "Location: ";
+            status.SetTextColor(Color.White);
 
 			// Layout for horizontal oriented buttons
 			buttons = new LinearLayout (this);
