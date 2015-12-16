@@ -40,7 +40,6 @@ namespace RunApp
 		float angle;
 		float ax;
 		float ay;
-        float x, y;
 
 		List<PointF> track = new List<PointF> ();   // List for the drawn points for tracking
 
@@ -58,9 +57,10 @@ namespace RunApp
 			Criteria crit = new Criteria ();
 			crit.Accuracy = Accuracy.Fine;
 			IList<string> alp = lm.GetProviders (crit, true);
-			if (alp != null && alp.Count > 0) {            
+			if (alp != null && alp.Count > 0)
+            {            
 				string lp = alp [0];
-				lm.RequestLocationUpdates (lp, 200, 5, this);               
+				lm.RequestLocationUpdates (lp, 200, 4, this);               
 			}
 
 			BitmapFactory.Options opties = new BitmapFactory.Options ();
@@ -92,7 +92,7 @@ namespace RunApp
 			north = (float)loc.Latitude;
 			east = (float)loc.Longitude;
 			string info = $"{north} Latitude, {east} Longitude";		// Doesn't work in Xamarin
-            RunningApp.status.Text = info;
+            RunningApp.status.Text = "Location: " + info;
 			PointF geo = new PointF (north, east);
 			current = Projectie.Geo2RD (geo);
 			Invalidate ();
@@ -112,7 +112,7 @@ namespace RunApp
 
             // Drawing the map
             Paint verf = new Paint ();
-			verf.Color = Color.White;
+            verf.Color = Color.Red;
 			mat = new Matrix ();
 
 			midx = (centre.X - 136000) * 0.4f;
@@ -127,18 +127,18 @@ namespace RunApp
 			canvas.DrawBitmap (this.map, mat, verf);
 			canvas.Restore ();
             
-			// Drawing the cursor on your location
+			// Drawing your location
 			if (current != null)
             {
 				float ax = current.X - centre.X;
 				float px = ax * 0.4f;
 				float sx = px * scale;
-				x = Width / 2 + sx;
+				float x = Width / 2 + sx;
 
 				float ay = centre.Y - current.Y;
 				float py = ay * 0.4f;
 				float sy = py * scale;
-				y = Height / 2 + sy;
+				float y = Height / 2 + sy;
 
 
 				Matrix mat2 = new Matrix ();
@@ -153,7 +153,6 @@ namespace RunApp
 			}
 
             // Drawing the track
-            verf.Color = Color.Red;
 			foreach(PointF point in track)
             {
                 canvas.DrawPoint(point.X, point.Y, verf);
@@ -163,6 +162,7 @@ namespace RunApp
 		// Touch Event
 		public void touch (object sender, TouchEventArgs tea)
 		{
+            // Pinch
 			v1 = new PointF (tea.Event.GetX (0), tea.Event.GetY (0));
 			if (tea.Event.PointerCount == 2)
             {
@@ -180,9 +180,10 @@ namespace RunApp
 					float factor = dist / start;
 					scale = oldScale * factor;
 					Invalidate ();
-				}
-                
-			} else if (!pinching)
+				}                
+			}
+            // Drag
+            else if (!pinching)
             {
 				// Documents the start point when a finger hits the screen
 				if (tea.Event.Action == MotionEventActions.Down)
@@ -246,7 +247,8 @@ namespace RunApp
 				// Code for tracking 
 
 				startButton.Text = "Stop";
-			} else
+			}
+            else
             {
 				// Do nothing
 				startButton.Text = "Start";
@@ -270,6 +272,7 @@ namespace RunApp
 			alert.Show ();
 		}
 
+        // Gives angle its value
 		public void OnSensorChanged (SensorEvent e)
 		{
 			angle = e.Values [0];
@@ -278,24 +281,20 @@ namespace RunApp
 
 		// Necessary methods for Location interface
 		public void OnProviderDisabled (string provider)
-		{
-            
+		{           
 		}
 
 		public void OnProviderEnabled (string provider)
-		{
-           
+		{          
 		}
 
 		public void OnStatusChanged (string provider, [GeneratedEnum] Availability status, Bundle extras)
-		{
-            
+        {             
 		}
 
 		// Sensor interface methods
 		public void OnAccuracyChanged (Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
-		{
-            
+		{            
 		}
 	}
 }

@@ -6,7 +6,7 @@ using Android.Graphics;
 
 namespace RunApp
 {
-	[Activity (Label = "5532795 Running App", MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity (Label = "5532795 RunForrest", MainLauncher = true, Icon = "@drawable/icon")]
 	public class RunningApp : Activity
 	{
 		// Declaring variables
@@ -63,8 +63,8 @@ namespace RunApp
 
 			// The updated location status
 			status = new TextView (this);
-            status.SetTextColor(Color.White);
-            status.Text = "Locatie: ";
+            status.SetTextColor(Color.Black);
+            status.Text = "Calculating location....";
 
 			// Layout for horizontal oriented buttons
 			buttons = new LinearLayout (this);
@@ -72,6 +72,7 @@ namespace RunApp
 			buttons.AddView (centre);
 			buttons.AddView (start);
 			buttons.AddView (clear);
+            buttons.SetBackgroundColor(Color.DarkCyan);
 
 			// Adding all the views
 			superstack = new LinearLayout (this);
@@ -79,6 +80,7 @@ namespace RunApp
 			superstack.AddView (buttons);
 			superstack.AddView (status);
 			superstack.AddView (runv);
+            superstack.SetBackgroundColor(Color.Cyan);
 
             // Set our view from the LinearLayout
             SetContentView(superstack);
