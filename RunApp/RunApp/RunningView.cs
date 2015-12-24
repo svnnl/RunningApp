@@ -89,7 +89,6 @@ namespace RunApp
             return (float)Math.Sqrt(a * a + b * b);
         }
 
-
         // Action when Location has changed
         public void OnLocationChanged(Location loc)
         {
@@ -155,8 +154,8 @@ namespace RunApp
                 mat2.PostTranslate(-cursor.Width / 2, -cursor.Height / 2);
                 mat2.PostRotate(angle);
                 mat2.PostTranslate(x, y);
-               
-                canvas.DrawBitmap (cursor, mat2, verf);
+
+                canvas.DrawBitmap(cursor, mat2, verf);
 
                 // Draws the track
                 foreach (PointF point in track)
@@ -272,30 +271,29 @@ namespace RunApp
                 startButton.Text = "Stop";
                 RunningApp.status.Text = "Tracking has started.";
             }
-            if(buttonText == "Stop")
+            if (buttonText == "Stop")
             {
                 tracking = false;
                 startButton.Text = "Start";
                 RunningApp.status.Text = "Tracking has stopped.";
             }
-
         }
 
         // Clears track when dialog is confirmed
         public void clearMap(object sender, EventArgs ea)
         {
-            alert.SetTitle("Clear track");
-            alert.SetMessage("Are you sure you want to delete your track?");
-            alert.SetCancelable(false);
-            alert.SetPositiveButton("Yes", (object o, DialogClickEventArgs e) =>
+            alert.SetTitle("Clear track")
+            .SetMessage("Are you sure you want to delete your track?")
+            .SetCancelable(false)
+            .SetPositiveButton("Yes", (object o, DialogClickEventArgs e) =>
            {
                track.Clear(); // Clears the list of drawn lines for the track
-            });
-            alert.SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
+           })
+            .SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
             {
                 // Do nothing
-            });
-            alert.Show();
+            })
+            .Show();
         }
 
         // Gives angle its value
@@ -324,6 +322,3 @@ namespace RunApp
         }
     }
 }
-
-// Sebastiaan van Nijen 5532795
-// Basil Morsi 5754003
