@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic; // Vanwege IList
+using System.Collections.Generic; // Vanwege IList\
+using System.Diagnostics; // Vanwege Stopwatch
 
 using Android.App;
 using Android.Content;
@@ -16,16 +17,10 @@ namespace RunApp
     // Custom View for the App
     class RunningView : View, ILocationListener, ISensorEventListener
     {
-        // Managers for location and sensor
-        LocationManager lm;
-        SensorManager sm;
-
-        // Drawing variables
-        Matrix mat;
+        // Bitmaps for images
         Bitmap map, cursor;
 
-        // Location variables
-        float north, east;
+        // Current location point
         PointF current;
 
         // Map centering variables
@@ -33,11 +28,11 @@ namespace RunApp
         float midx, midy;
 
         // Variables for touch-event
-        PointF v1, v2;
-        PointF s1, s2;
+        private PointF v1, v2;
+        private PointF s1, s2;
         float scale;
-        float oldScale;
-        bool pinching = false;
+        private float oldScale;
+        private bool pinching = false;
         PointF dragstart;
 
         // Angle for the compass
@@ -45,26 +40,29 @@ namespace RunApp
 
         // Variables for tracking
         List<PointF> track = new List<PointF>();   // List for the drawn points for tracking
+        // List<List<PointF>> list = new List<List<PointF>>();  // List for saving tracks
         bool tracking = false;
 
-        AlertDialog.Builder alert;
+        AlertDialog.Builder alert, error;
+
+        Stopwatch stopwatch;
 
         // Constructor
         public RunningView(Context c) : base(c)
         {
             // Sensormanager for compass            
-            sm = (SensorManager)c.GetSystemService(Context.SensorService);
+            SensorManager sm = (SensorManager)c.GetSystemService(Context.SensorService);
             sm.RegisterListener(this, sm.GetDefaultSensor(SensorType.Orientation), SensorDelay.Ui);
 
             // Locationmanager for the GPS
-            lm = (LocationManager)c.GetSystemService(Context.LocationService);
+            LocationManager lm = (LocationManager)c.GetSystemService(Context.LocationService);
             Criteria crit = new Criteria();
             crit.Accuracy = Accuracy.Fine;
             IList<string> alp = lm.GetProviders(crit, true);
             if (alp != null && alp.Count > 0)
             {
                 string lp = alp[0];
-                lm.RequestLocationUpdates(lp, 500, 4, this);
+                lm.RequestLocationUpdates(lp, 1000, 5, this);
             }
 
             BitmapFactory.Options opties = new BitmapFactory.Options();
@@ -79,6 +77,7 @@ namespace RunApp
             centre = new PointF(139000, 455000); // Centre of the map
 
             alert = new AlertDialog.Builder(c); // For confirmation dialogs
+            error = new AlertDialog.Builder(c);
         }
 
         // Calculates the distance between two points
@@ -92,8 +91,8 @@ namespace RunApp
         // Action when Location has changed
         public void OnLocationChanged(Location loc)
         {
-            north = (float)loc.Latitude;
-            east = (float)loc.Longitude;
+            float north = (float)loc.Latitude;
+            float east = (float)loc.Longitude;
             string info = $"{north} Latitude, {east} Longitude";		// Doesn't work in Xamarin
             // string info = north.ToString() + " Latitude, " + east.ToString() + " Longitude";  // Works in Xamarin
             RunningApp.status.Text = "Location: " + info;
@@ -123,7 +122,7 @@ namespace RunApp
             // Drawing the map
             Paint verf = new Paint();
             verf.Color = Color.Red;
-            mat = new Matrix();
+            Matrix mat = new Matrix();
 
             midx = (centre.X - 136000) * 0.4f;
             midy = -(centre.Y - 458000) * 0.4f;
@@ -171,7 +170,7 @@ namespace RunApp
                     y = Height / 2 + sy;
 
                     verf.Color = Color.DarkRed;
-                    canvas.DrawCircle(x, y, 15, verf);
+                    canvas.DrawCircle(x, y, 10, verf);
                 }
             }
         }
@@ -251,7 +250,16 @@ namespace RunApp
         // Centers map on your location
         public void centreMap(object sender, EventArgs ea)
         {
-            if (current != null)
+            if (current == null)
+            {
+                error.SetTitle("Error")
+                    .SetMessage("No GPS signal found.")
+                    .SetCancelable(true)
+                    .SetNeutralButton("OK", (object o, DialogClickEventArgs e) =>
+                    { })
+                    .Show();
+            }
+            else
             {
                 centre = new PointF(current.X, current.Y);
                 Invalidate();
@@ -288,12 +296,28 @@ namespace RunApp
             .SetPositiveButton("Yes", (object o, DialogClickEventArgs e) =>
            {
                track.Clear(); // Clears the list of drawn lines for the track
+               Invalidate();
            })
             .SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
             {
                 // Do nothing
             })
             .Show();
+        }
+
+        public void shareTrack(object sender, EventArgs ea)
+        {
+
+        }
+
+        public void analyzeTrack(object sender, EventArgs ea)
+        {
+
+        }
+
+        public void saveTrack(object sender, EventArgs ea)
+        {
+
         }
 
         // Gives angle its value
