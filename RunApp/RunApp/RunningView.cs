@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic; // Vanwege IList\
+using System.Collections.Generic; // Vanwege IList
 using System.Diagnostics; // Vanwege Stopwatch
 
 using Android.App;
@@ -40,7 +40,7 @@ namespace RunApp
 
         // Variables for tracking
         List<PointF> track = new List<PointF>();   // List for the drawn points for tracking
-        // List<List<PointF>> list = new List<List<PointF>>();  // List for saving tracks
+        //List<List<PointF>> trackList = new List<List<PointF>>();  // List for saving tracks
         bool tracking = false;
 
         AlertDialog.Builder alert, error;
@@ -62,7 +62,7 @@ namespace RunApp
             if (alp != null && alp.Count > 0)
             {
                 string lp = alp[0];
-                lm.RequestLocationUpdates(lp, 1000, 5, this);
+                lm.RequestLocationUpdates(lp, 2000, 5, this);
             }
 
             BitmapFactory.Options opties = new BitmapFactory.Options();
@@ -78,6 +78,8 @@ namespace RunApp
 
             alert = new AlertDialog.Builder(c); // For confirmation dialogs
             error = new AlertDialog.Builder(c);
+
+            stopwatch = new Stopwatch();
         }
 
         // Calculates the distance between two points
@@ -278,12 +280,20 @@ namespace RunApp
                 tracking = true;
                 startButton.Text = "Stop";
                 RunningApp.status.Text = "Tracking has started.";
+
+                if (track == null)
+                    stopwatch.Restart();
+                else
+                    stopwatch.Start();
+
             }
             if (buttonText == "Stop")
             {
                 tracking = false;
                 startButton.Text = "Start";
                 RunningApp.status.Text = "Tracking has stopped.";
+
+                stopwatch.Stop();
             }
         }
 
@@ -305,9 +315,19 @@ namespace RunApp
             .Show();
         }
 
-        public void shareTrack(object sender, EventArgs ea)
+        public override string ToString()
         {
+            string res = "";
+            if(track != null)
+            {
+                foreach(PointF p in track)
+                {
+                    res += $"{p.X}, {p.Y}:";
+                    res += "\n";
+                }
+            }
 
+            return res;
         }
 
         public void analyzeTrack(object sender, EventArgs ea)
@@ -317,7 +337,7 @@ namespace RunApp
 
         public void saveTrack(object sender, EventArgs ea)
         {
-
+            
         }
 
         // Gives angle its value

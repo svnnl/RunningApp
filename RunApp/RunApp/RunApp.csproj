@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyzeView.cs" />
     <Compile Include="Projectie.cs" />
     <Compile Include="RunningView.cs" />
     <Compile Include="RunningApp.cs" />

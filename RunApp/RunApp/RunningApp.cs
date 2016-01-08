@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Content;
 using Android.Widget;
 using Android.OS;
@@ -62,7 +63,7 @@ namespace RunApp
             share = new Button(this);
             share.Text = "Share";
             share.SetWidth(metrics.WidthPixels / 3);
-            share.Click += runv.shareTrack;
+            share.Click += shareTrack;
 
             analyze = new Button(this);
             analyze.Text = "Analyze";
@@ -103,6 +104,17 @@ namespace RunApp
 
             // Set our view from the LinearLayout
             SetContentView(superstack);
+        }
+
+        public void shareTrack(object sender, EventArgs ea)
+        {          
+            Intent i = new Intent(Intent.ActionSend);
+            i.SetType("text/plain");
+
+            string message = runv.ToString();
+
+            i.PutExtra(Intent.ExtraText, message);
+            StartActivity(i);
         }
     }
 }
