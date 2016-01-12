@@ -22,6 +22,7 @@ namespace RunApp
 
         // Current location point
         PointF current;
+        TimeSpan currentTime;
 
         // Map centering variables
         PointF centre;
@@ -40,7 +41,9 @@ namespace RunApp
 
         // Variables for tracking
         List<PointF> track = new List<PointF>();   // List for the drawn points for tracking
-        //List<List<PointF>> trackList = new List<List<PointF>>();  // List for saving tracks
+        List<Track> track2 = new List<Track>();    // List for Track points with location and time     
+
+        List<string> trackList = new List<string>();  // List for saving tracks
         bool tracking = false;
 
         AlertDialog.Builder alert, error;
@@ -79,7 +82,7 @@ namespace RunApp
             alert = new AlertDialog.Builder(c); // For confirmation dialogs
             error = new AlertDialog.Builder(c);
 
-            stopwatch = new Stopwatch();
+            stopwatch = new Stopwatch();        // Stopwatch for time measurement
         }
 
         // Calculates the distance between two points
@@ -98,12 +101,19 @@ namespace RunApp
             string info = $"{north} Latitude, {east} Longitude";		// Doesn't work in Xamarin
             // string info = north.ToString() + " Latitude, " + east.ToString() + " Longitude";  // Works in Xamarin
             RunningApp.status.Text = "Location: " + info;
+            
             PointF geo = new PointF(north, east);
             current = Projectie.Geo2RD(geo);
 
+            currentTime = stopwatch.Elapsed;
+
             // Starts adding points to a list when start button is pressed
-            if (tracking == true)
+            if (tracking == true)            
                 track.Add(current);
+
+            // Adds Track objects to the list when start button is pressed
+            if (tracking == true)
+                track2.Add(new Track(current, currentTime));
 
             Invalidate();
         }
@@ -159,14 +169,14 @@ namespace RunApp
                 canvas.DrawBitmap(cursor, mat2, verf);
 
                 // Draws the track
-                foreach (PointF point in track)
+                foreach (Track point in track2)
                 {
-                    ax = point.X - centre.X;
+                    ax = point.currentLocation.X - centre.X;
                     px = ax * 0.4f;
                     sx = px * scale;
                     x = Width / 2 + sx;
 
-                    ay = centre.Y - point.Y;
+                    ay = centre.Y - point.currentLocation.Y;
                     py = ay * 0.4f;
                     sy = py * scale;
                     y = Height / 2 + sy;
@@ -236,10 +246,10 @@ namespace RunApp
                     dragstart.Y = y;
 
                     // Limitations of vertical dragging
-                    if (centre.Y > 457575)
-                        centre.Y = 457575;
-                    if (centre.Y < 453425)
-                        centre.Y = 453425;
+                    if (centre.Y > 457625)
+                        centre.Y = 457625;
+                    if (centre.Y < 453375)
+                        centre.Y = 453375;
 
                     Invalidate();
                 }
@@ -281,19 +291,19 @@ namespace RunApp
                 startButton.Text = "Stop";
                 RunningApp.status.Text = "Tracking has started.";
 
-                if (track == null)
-                    stopwatch.Restart();
+                if (track2 == null)
+                    stopwatch.Restart(); // Restarts when there is no active track on the screen
                 else
-                    stopwatch.Start();
-
+                    stopwatch.Start();   // Resumes the active track
             }
+
             if (buttonText == "Stop")
             {
                 tracking = false;
                 startButton.Text = "Start";
                 RunningApp.status.Text = "Tracking has stopped.";
 
-                stopwatch.Stop();
+                stopwatch.Stop();   // Stops/pauses the time measurement
             }
         }
 
@@ -305,7 +315,7 @@ namespace RunApp
             .SetCancelable(false)
             .SetPositiveButton("Yes", (object o, DialogClickEventArgs e) =>
            {
-               track.Clear(); // Clears the list of drawn lines for the track
+               track2.Clear(); // Clears the list of drawn lines for the track
                Invalidate();
            })
             .SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
@@ -318,26 +328,16 @@ namespace RunApp
         public override string ToString()
         {
             string res = "";
-            if(track != null)
-            {
-                foreach(PointF p in track)
+            if(track2 != null)
+            {              
+                foreach(Track t in track2)
                 {
-                    res += $"{p.X}, {p.Y}:";
+                    res += $"{t.currentLocation.X} {t.currentLocation.Y} {t.currentTime.TotalSeconds} seconds";
                     res += "\n";
                 }
             }
-
-            return res;
-        }
-
-        public void analyzeTrack(object sender, EventArgs ea)
-        {
-
-        }
-
-        public void saveTrack(object sender, EventArgs ea)
-        {
             
+            return res;
         }
 
         // Gives angle its value
@@ -348,21 +348,11 @@ namespace RunApp
         }
 
         // Necessary methods for Location interface
-        public void OnProviderDisabled(string provider)
-        {
-        }
-
-        public void OnProviderEnabled(string provider)
-        {
-        }
-
-        public void OnStatusChanged(string provider, [GeneratedEnum] Availability status, Bundle extras)
-        {
-        }
+        public void OnProviderDisabled(string provider) { }
+        public void OnProviderEnabled(string provider) { }
+        public void OnStatusChanged(string provider, [GeneratedEnum] Availability status, Bundle extras) { }
 
         // Sensor interface methods
-        public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
-        {
-        }
+        public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy) { }
     }
 }

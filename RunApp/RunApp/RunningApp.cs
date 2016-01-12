@@ -68,12 +68,12 @@ namespace RunApp
             analyze = new Button(this);
             analyze.Text = "Analyze";
             analyze.SetWidth(metrics.WidthPixels / 3);
-            analyze.Click += runv.analyzeTrack;
+            analyze.Click += analyzeTrack;
 
             save = new Button(this);
             save.Text = "Save";
             save.SetWidth(metrics.WidthPixels / 3);
-            save.Click += runv.saveTrack;
+            save.Click += saveTrack;
 
             // The updated location status
             status = new TextView(this);
@@ -114,6 +114,24 @@ namespace RunApp
             string message = runv.ToString();
 
             i.PutExtra(Intent.ExtraText, message);
+            StartActivity(i);
+        }
+
+
+        public void analyzeTrack(object sender, EventArgs ea)
+        {
+            Intent i = new Intent(this, typeof(AnalyzeApp));
+            string message = runv.ToString();
+
+            i.PutExtra("message", message);
+
+            StartActivity(i);
+        }
+
+        public void saveTrack(object sender, EventArgs ea)
+        {
+            Intent i = new Intent(this, typeof(SaveApp));
+
             StartActivity(i);
         }
     }
