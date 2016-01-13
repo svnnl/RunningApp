@@ -12,22 +12,22 @@ using Android.Graphics;
 
 namespace RunApp
 {
-    [Activity(Label = "Analyze")]
+    [Activity(Label = "Track analysis")]
     public class AnalyzeApp : Activity
     {
         AnalyzeView analyzeView;
         
-        public static string message;
+        public string message;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
-            analyzeView = new AnalyzeView(this);
-
             message = Intent.GetStringExtra("message");
             
 
+            analyzeView = new AnalyzeView(this, message);
+            
             SetContentView(analyzeView);
         }
     }

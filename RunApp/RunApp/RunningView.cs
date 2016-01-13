@@ -40,8 +40,7 @@ namespace RunApp
         float angle;
 
         // Variables for tracking
-        List<PointF> track = new List<PointF>();   // List for the drawn points for tracking
-        List<Track> track2 = new List<Track>();    // List for Track points with location and time     
+        List<DataPoint> track = new List<DataPoint>();    // List for Track points with location and time     
 
         List<string> trackList = new List<string>();  // List for saving tracks
         bool tracking = false;
@@ -107,13 +106,9 @@ namespace RunApp
 
             currentTime = stopwatch.Elapsed;
 
-            // Starts adding points to a list when start button is pressed
-            if (tracking == true)            
-                track.Add(current);
-
             // Adds Track objects to the list when start button is pressed
             if (tracking == true)
-                track2.Add(new Track(current, currentTime));
+                track.Add(new DataPoint(current, currentTime));
 
             Invalidate();
         }
@@ -169,7 +164,7 @@ namespace RunApp
                 canvas.DrawBitmap(cursor, mat2, verf);
 
                 // Draws the track
-                foreach (Track point in track2)
+                foreach (DataPoint point in track)
                 {
                     ax = point.currentLocation.X - centre.X;
                     px = ax * 0.4f;
@@ -291,7 +286,7 @@ namespace RunApp
                 startButton.Text = "Stop";
                 RunningApp.status.Text = "Tracking has started.";
 
-                if (track2 == null)
+                if (track == null)
                     stopwatch.Restart(); // Restarts when there is no active track on the screen
                 else
                     stopwatch.Start();   // Resumes the active track
@@ -315,7 +310,7 @@ namespace RunApp
             .SetCancelable(false)
             .SetPositiveButton("Yes", (object o, DialogClickEventArgs e) =>
            {
-               track2.Clear(); // Clears the list of drawn lines for the track
+               track.Clear(); // Clears the list of drawn lines for the track
                Invalidate();
            })
             .SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
@@ -325,18 +320,32 @@ namespace RunApp
             .Show();
         }
 
+        // Creates a string for the other activities
         public override string ToString()
         {
             string res = "";
-            if(track2 != null)
+            if(track != null)
             {              
-                foreach(Track t in track2)
+                foreach(DataPoint t in track)
                 {
                     res += $"{t.currentLocation.X} {t.currentLocation.Y} {t.currentTime.TotalSeconds} seconds";
                     res += "\n";
                 }
             }
             
+            return res;
+        }
+
+        // Creates a string for the share button
+        public string summary()
+        {
+            string res = "";
+            if (track!= null)
+            {
+
+                foreach(DataPoint t in track)
+            }
+
             return res;
         }
 

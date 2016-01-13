@@ -106,6 +106,7 @@ namespace RunApp
             SetContentView(superstack);
         }
 
+        // Option to share the track with different kinds of social media
         public void shareTrack(object sender, EventArgs ea)
         {          
             Intent i = new Intent(Intent.ActionSend);
@@ -117,7 +118,7 @@ namespace RunApp
             StartActivity(i);
         }
 
-
+        // Starts new activity that analyzes the track
         public void analyzeTrack(object sender, EventArgs ea)
         {
             Intent i = new Intent(this, typeof(AnalyzeApp));
@@ -128,9 +129,13 @@ namespace RunApp
             StartActivity(i);
         }
 
+        // Starts new activity with a track list and option to save the current track
         public void saveTrack(object sender, EventArgs ea)
         {
             Intent i = new Intent(this, typeof(SaveApp));
+
+            string message = runv.ToString();
+            i.PutExtra("message", message);
 
             StartActivity(i);
         }

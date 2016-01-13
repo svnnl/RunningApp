@@ -17,18 +17,18 @@ namespace RunApp
     class AnalyzeView : View
     {
         string message;
-        List<Track> track = new List<Track>();
+        List<DataPoint> track = new List<DataPoint>();
 
-        public AnalyzeView(Context c) : base(c)
-        {
-            message = AnalyzeApp.message;
+        public AnalyzeView(Context c, string s) : base(c)
+        {            
+            this.message = s;
         }
 
         protected override void OnDraw(Canvas canvas)
         {
             base.OnDraw(canvas);
 
-            if (message != null)
+            if (message != "")
             {
                 string[] values = message.Split('\n');
 
@@ -37,10 +37,29 @@ namespace RunApp
                     string[] data = s.Split(' ');
                     PointF point = new PointF(float.Parse(data[0]), float.Parse(data[1]));
                     TimeSpan time = new TimeSpan(int.Parse(data[2]));
-                    Track t = new Track(point, time);
+                    DataPoint t = new DataPoint(point, time);
                     track.Add(t);
                 }
             }
+        }
+
+        public static double Distance(DataPoint a, DataPoint b)
+        {
+            float x = b.currentLocation.X - a.currentLocation.X;
+            float y = b.currentLocation.Y - a.currentLocation.Y;
+            return Math.Sqrt(x * x + y * y);
+        }
+
+        public static double totalDistance(List<DataPoint> track)
+        {
+            double distance = 0;
+            int count = track.Count;
+            for(int t = 0; t < count; t++)
+            {
+                distance = Distance(track[t], track[t++]);
+            }
+           
+            return distance;
         }
     }
 }
