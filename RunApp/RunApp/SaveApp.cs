@@ -34,10 +34,10 @@ namespace RunApp
             message = Intent.GetStringExtra("message") ?? "Empty string";
 
             lView = new ListView(this);
-            adp = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItemActivated1);
+            adp = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSelectableListItem);
             lView.Adapter = adp;
-            
-            lView.ChoiceMode = ChoiceMode.Single;
+
+            lView.ChoiceMode = ChoiceMode.None;
 
             lView.ItemClick += click;
 
@@ -54,6 +54,7 @@ namespace RunApp
             int pos = e.Position;
             Intent i = new Intent(this, typeof(AnalyzeApp));
             // Position of item
+            // Intent.PutExtra("item", string van item);
 
             StartActivity(i);
         }

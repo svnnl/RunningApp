@@ -20,7 +20,7 @@ namespace RunApp
         List<DataPoint> track = new List<DataPoint>();
 
         public AnalyzeView(Context c, string s) : base(c)
-        {            
+        {
             this.message = s;
         }
 
@@ -28,6 +28,7 @@ namespace RunApp
         {
             base.OnDraw(canvas);
 
+            // Turns the string into a list with DataPoints
             if (message != "")
             {
                 string[] values = message.Split('\n');
@@ -41,8 +42,12 @@ namespace RunApp
                     track.Add(t);
                 }
             }
+
+            // Drawing the graph
+
         }
 
+        // Calculates the distance between two points
         public static double Distance(DataPoint a, DataPoint b)
         {
             float x = b.currentLocation.X - a.currentLocation.X;
@@ -50,16 +55,38 @@ namespace RunApp
             return Math.Sqrt(x * x + y * y);
         }
 
+        // Calculates the total distance of the track
         public static double totalDistance(List<DataPoint> track)
         {
             double distance = 0;
             int count = track.Count;
-            for(int t = 0; t < count; t++)
+            for (int t = 0; t < count; t++)
             {
                 distance = Distance(track[t], track[t++]);
             }
-           
+
             return distance;
+        }
+
+        // Calcules the time between two points
+        public static double Time(DataPoint a, DataPoint b)
+        {
+            return b.currentTime.TotalSeconds - a.currentTime.TotalSeconds;
+        }
+
+        // Calculates the speed between two points in m/s
+        public static double Speed(DataPoint a, DataPoint b)
+        {
+            double distance = Distance(a, b);
+            double time = Time(a, b);
+            return distance / time;
+        }
+
+        // Calculates the average speed of the whole track in m/s
+        public static double avgSpeed(List<DataPoint> track)
+        {
+            int count = track.Count;
+            return Speed(track[0], track[count-1]);
         }
     }
 }

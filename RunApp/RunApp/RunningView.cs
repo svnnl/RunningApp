@@ -42,10 +42,9 @@ namespace RunApp
         // Variables for tracking
         List<DataPoint> track = new List<DataPoint>();    // List for Track points with location and time     
 
-        List<string> trackList = new List<string>();  // List for saving tracks
         bool tracking = false;
 
-        AlertDialog.Builder alert, error;
+        AlertDialog.Builder alert;
 
         Stopwatch stopwatch;
 
@@ -79,9 +78,9 @@ namespace RunApp
             centre = new PointF(139000, 455000); // Centre of the map
 
             alert = new AlertDialog.Builder(c); // For confirmation dialogs
-            error = new AlertDialog.Builder(c);
 
             stopwatch = new Stopwatch();        // Stopwatch for time measurement
+            
         }
 
         // Calculates the distance between two points
@@ -100,7 +99,7 @@ namespace RunApp
             string info = $"{north} Latitude, {east} Longitude";		// Doesn't work in Xamarin
             // string info = north.ToString() + " Latitude, " + east.ToString() + " Longitude";  // Works in Xamarin
             RunningApp.status.Text = "Location: " + info;
-            
+
             PointF geo = new PointF(north, east);
             current = Projectie.Geo2RD(geo);
 
@@ -259,12 +258,7 @@ namespace RunApp
         {
             if (current == null)
             {
-                error.SetTitle("Error")
-                    .SetMessage("No GPS signal found.")
-                    .SetCancelable(true)
-                    .SetNeutralButton("OK", (object o, DialogClickEventArgs e) =>
-                    { })
-                    .Show();
+                Toast.MakeText(Context, "No GPS signal found.", ToastLength.Short).Show();
             }
             else
             {
@@ -284,9 +278,9 @@ namespace RunApp
                 // Code for tracking 
                 tracking = true;
                 startButton.Text = "Stop";
-                RunningApp.status.Text = "Tracking has started.";
+                Toast.MakeText(Context, "Tracking has started.", ToastLength.Short).Show();
 
-                if (track == null)
+                if (track.Count == 0)
                     stopwatch.Restart(); // Restarts when there is no active track on the screen
                 else
                     stopwatch.Start();   // Resumes the active track
@@ -296,7 +290,8 @@ namespace RunApp
             {
                 tracking = false;
                 startButton.Text = "Start";
-                RunningApp.status.Text = "Tracking has stopped.";
+                
+                Toast.MakeText(Context, "Tracking has stopped.", ToastLength.Short).Show();
 
                 stopwatch.Stop();   // Stops/pauses the time measurement
             }
@@ -311,6 +306,8 @@ namespace RunApp
             .SetPositiveButton("Yes", (object o, DialogClickEventArgs e) =>
            {
                track.Clear(); // Clears the list of drawn lines for the track
+               Toast.MakeText(Context, "Track has been deleted.", ToastLength.Short).Show();
+
                Invalidate();
            })
             .SetNegativeButton("No", (object o, DialogClickEventArgs e) =>
@@ -320,19 +317,19 @@ namespace RunApp
             .Show();
         }
 
-        // Creates a string for the other activities
+        // Creates a string of raw data for the other activities
         public override string ToString()
         {
             string res = "";
-            if(track != null)
-            {              
-                foreach(DataPoint t in track)
+            if (track.Count != 0)
+            {
+                foreach (DataPoint t in track)
                 {
                     res += $"{t.currentLocation.X} {t.currentLocation.Y} {t.currentTime.TotalSeconds} seconds";
                     res += "\n";
                 }
             }
-            
+
             return res;
         }
 
@@ -340,10 +337,14 @@ namespace RunApp
         public string summary()
         {
             string res = "";
-            if (track!= null)
+            if (track.Count != 0)
             {
-
-                foreach(DataPoint t in track)
+                res = $"Total distance: {AnalyzeView.totalDistance(track)}m with average velocity{AnalyzeView.avgSpeed(track)}m/s.";
+                foreach (DataPoint t in track)
+                {
+                    res += $"{t.currentLocation.X}, {t.currentLocation.Y}, {t.currentTime:hh:mm:ss}";
+                    res += "\n";
+                }
             }
 
             return res;

@@ -108,11 +108,11 @@ namespace RunApp
 
         // Option to share the track with different kinds of social media
         public void shareTrack(object sender, EventArgs ea)
-        {          
+        {
             Intent i = new Intent(Intent.ActionSend);
             i.SetType("text/plain");
 
-            string message = runv.ToString();
+            string message = runv.summary();
 
             i.PutExtra(Intent.ExtraText, message);
             StartActivity(i);

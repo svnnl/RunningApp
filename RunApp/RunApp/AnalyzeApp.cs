@@ -16,7 +16,7 @@ namespace RunApp
     public class AnalyzeApp : Activity
     {
         AnalyzeView analyzeView;
-        
+
         public string message;
 
         protected override void OnCreate(Bundle bundle)
@@ -24,10 +24,9 @@ namespace RunApp
             base.OnCreate(bundle);
 
             message = Intent.GetStringExtra("message");
-            
 
             analyzeView = new AnalyzeView(this, message);
-            
+
             SetContentView(analyzeView);
         }
     }
