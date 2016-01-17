@@ -4,7 +4,9 @@ using Android.Graphics; // For PointF
 
 namespace RunApp
 {
-    // Class to save track points
+    /// <summary>
+    /// Class to save track points
+    /// </summary>
     class DataPoint
     {
         public PointF currentLocation;      // Variable for the current location

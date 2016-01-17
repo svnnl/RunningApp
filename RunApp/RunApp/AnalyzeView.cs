@@ -13,7 +13,9 @@ using Android.Widget;
 
 namespace RunApp
 {
-    // Custom class for the analyze screen
+    /// <summary>
+    /// View for the drawing of the analysis graph
+    /// </summary>
     class AnalyzeView : View
     {
         string message;

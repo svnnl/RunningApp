@@ -7,6 +7,9 @@ using Android.Graphics;
 
 namespace RunApp
 {
+    /// <summary>
+    /// Main activity of the Running App
+    /// </summary>
     [Activity(Label = "5532795 RunForrest", MainLauncher = true, Icon = "@drawable/run")]
     public class RunningApp : Activity
     {

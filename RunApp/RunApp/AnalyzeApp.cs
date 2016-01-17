@@ -12,6 +12,10 @@ using Android.Graphics;
 
 namespace RunApp
 {
+    /// <summary>
+    /// Activity for the analyze button
+    /// </summary>
+
     [Activity(Label = "Track analysis")]
     public class AnalyzeApp : Activity
     {

@@ -14,7 +14,9 @@ using Android.Hardware; // Vanwege ISensorEventListener;
 
 namespace RunApp
 {
-    // Custom View for the App
+    /// <summary>
+    /// View for the drawing and interacting of the map
+    /// </summary>
     class RunningView : View, ILocationListener, ISensorEventListener
     {
         // Bitmaps for images
