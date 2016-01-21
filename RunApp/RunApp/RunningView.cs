@@ -50,7 +50,10 @@ namespace RunApp
 
         Stopwatch stopwatch;
 
-        // Constructor
+        /// <summary>
+        /// Creates an instant of the RunningView
+        /// </summary>
+        /// <param name="c"></param>
         public RunningView(Context c) : base(c)
         {
             // Sensormanager for compass            
@@ -82,10 +85,15 @@ namespace RunApp
             alert = new AlertDialog.Builder(c); // For confirmation dialogs
 
             stopwatch = new Stopwatch();        // Stopwatch for time measurement
-            
+
         }
 
-        // Calculates the distance between two points
+        /// <summary>
+        /// Calculates the distance between two pointFs.
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
         static float Afstand(PointF p1, PointF p2)
         {
             float a = p1.X - p2.X;
@@ -183,7 +191,11 @@ namespace RunApp
             }
         }
 
-        // Touch Event
+        /// <summary>
+        /// Touch event of the map.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="tea"></param>
         public void touch(object sender, TouchEventArgs tea)
         {
             // Pinch
@@ -255,7 +267,11 @@ namespace RunApp
                 pinching = false;
         }
 
-        // Centers map on your location
+        /// <summary>
+        /// Centers map on your location
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ea"></param>
         public void centreMap(object sender, EventArgs ea)
         {
             if (current == null)
@@ -269,7 +285,11 @@ namespace RunApp
             }
         }
 
-        // Starts route when Start button is clicked
+        /// <summary>
+        ///  Starts route when Start button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ea"></param>
         public void startRoute(object sender, EventArgs ea)
         {
             Button startButton = (Button)sender;
@@ -292,14 +312,18 @@ namespace RunApp
             {
                 tracking = false;
                 startButton.Text = "Start";
-                
+
                 Toast.MakeText(Context, "Tracking has stopped.", ToastLength.Short).Show();
 
                 stopwatch.Stop();   // Stops/pauses the time measurement
             }
         }
 
-        // Clears track when dialog is confirmed
+        /// <summary>
+        /// Clears track when dialog is confirmed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ea"></param>
         public void clearMap(object sender, EventArgs ea)
         {
             alert.SetTitle("Clear track")
@@ -319,7 +343,10 @@ namespace RunApp
             .Show();
         }
 
-        // Creates a string of raw data for the other activities
+        /// <summary>
+        /// Creates a string of raw data for the other activities
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string res = "";
@@ -327,7 +354,7 @@ namespace RunApp
             {
                 foreach (DataPoint t in track)
                 {
-                    res += $"{t.currentLocation.X} {t.currentLocation.Y} {t.currentTime.TotalSeconds} seconds";
+                    res += $"{t.currentLocation.X} {t.currentLocation.Y} {t.currentTime.Ticks}";
                     res += "\n";
                 }
             }
@@ -335,16 +362,19 @@ namespace RunApp
             return res;
         }
 
-        // Creates a string for the share button
+        /// <summary>
+        /// Creates a string for the share button
+        /// </summary>
+        /// <returns></returns>
         public string summary()
         {
             string res = "";
             if (track.Count != 0)
             {
-                res = $"Total distance: {AnalyzeView.totalDistance(track)}m with average velocity{AnalyzeView.avgSpeed(track)}m/s.";
+                res = $"Total distance: {Math.Round(AnalyzeView.totalDistance(track), 2)}m with average velocity {Math.Round(AnalyzeView.avgSpeed(track), 2)}m/s.\n";
                 foreach (DataPoint t in track)
                 {
-                    res += $"{t.currentLocation.X}, {t.currentLocation.Y}, {t.currentTime:hh:mm:ss}";
+                    res += $"{t.currentLocation.X} | {t.currentLocation.Y} | {t.currentTime}";
                     res += "\n";
                 }
             }

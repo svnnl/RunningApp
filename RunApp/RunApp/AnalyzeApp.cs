@@ -27,7 +27,7 @@ namespace RunApp
         {
             base.OnCreate(bundle);
 
-            message = Intent.GetStringExtra("message");
+            message = Intent.GetStringExtra("message") ?? "";
 
             analyzeView = new AnalyzeView(this, message);
 

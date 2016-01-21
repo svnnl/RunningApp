@@ -37,7 +37,7 @@ namespace RunApp
             save.Text = "Click here to save the current track.";
             save.Click += saveCurrentTrack;
 
-            message = Intent.GetStringExtra("message") ?? "Empty string";
+            message = Intent.GetStringExtra("message") ?? "";
 
             lView = new ListView(this);
             adp = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSelectableListItem, trackList);
@@ -55,6 +55,11 @@ namespace RunApp
             SetContentView(stack);
         }
 
+        /// <summary>
+        /// Event on click of a List Item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void click(object sender, AdapterView.ItemClickEventArgs e)
         {
             int pos = e.Position;
@@ -68,12 +73,17 @@ namespace RunApp
             // StartActivity(i);
         }
 
+        /// <summary>
+        /// Event on click the Save button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ea"></param>
         private void saveCurrentTrack(object sender, EventArgs ea)
         {
 
         }
 
-        public void startSaving()
+        protected virtual void startSaving()
         {
             string docsFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
             string path = System.IO.Path.Combine(docsFolder, "tracks.db");
@@ -82,14 +92,14 @@ namespace RunApp
             if (!exists)
             {
                 database.CreateTable<string>();
-                foreach(string s in trackList)
+                foreach (string s in trackList)
                 {
                     database.Insert(s);
                 }
             }
         }
 
-        public void readTrack()
+        protected virtual void readTrack()
         {
 
         }

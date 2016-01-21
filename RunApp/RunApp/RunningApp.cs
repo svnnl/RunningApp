@@ -20,7 +20,9 @@ namespace RunApp
         LinearLayout buttons1, buttons2, superstack;
         AlertDialog.Builder alert;
 
-        // Asks if you really want to close the app when pressing 'Back' button
+        /// <summary>
+        /// Asks if you really want to close the app when pressing 'Back' button
+        /// </summary>
         public override void OnBackPressed()
         {
             alert = new AlertDialog.Builder(this);
@@ -109,7 +111,11 @@ namespace RunApp
             SetContentView(superstack);
         }
 
-        // Option to share the track with different kinds of social media
+        /// <summary>
+        /// Option to share the track with different kinds of social media
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ea"></param>
         public void shareTrack(object sender, EventArgs ea)
         {
             Intent i = new Intent(Intent.ActionSend);
@@ -121,7 +127,11 @@ namespace RunApp
             StartActivity(i);
         }
 
-        // Starts new activity that analyzes the track
+        /// <summary>
+        ///  Starts new activity that analyzes the track
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ea"></param>
         public void analyzeTrack(object sender, EventArgs ea)
         {
             Intent i = new Intent(this, typeof(AnalyzeApp));
@@ -132,7 +142,11 @@ namespace RunApp
             StartActivity(i);
         }
 
-        // Starts new activity with a track list and option to save the current track
+        /// <summary>
+        /// Starts new activity with a track list and option to save the current track
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ea"></param>
         public void saveTrack(object sender, EventArgs ea)
         {
             Intent i = new Intent(this, typeof(SaveApp));
