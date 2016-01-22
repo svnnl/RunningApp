@@ -90,7 +90,8 @@ namespace RunApp
         {
             if (message != "")
             {
-                database.Insert(new TrackItem("track", message));
+                database.Insert(new TrackItem("Track " + trackAdapter.Count, message));
+                this.readTrack();
             }
         }
 
@@ -104,7 +105,7 @@ namespace RunApp
             {
                 database.CreateTable<TrackItem>();
                 string s = RunningView.TrackToString(track);
-                database.Insert(new TrackItem("track 1", s));           
+                database.Insert(new TrackItem("dummy track", s));           
             }
         }
 
