@@ -76,10 +76,11 @@ namespace RunApp
             canvas.DrawText("Average velocity: " + Math.Round(avgSpeed(track), 2).ToString() + " m/s", x, 100, paint);
             canvas.DrawText("With a maximum velocity of: " + Math.Round(maxSpeed(track), 2).ToString() + " m/s", x, 150, paint);
             canvas.DrawText("In a total of " + Math.Round(Time(track.First(), track.Last()), 2).ToString() + " seconds", x, 200, paint);
+            canvas.DrawText("Speed/Time graph", Width / 2 - 200, 300, paint);
 
             // Drawing the axis
             canvas.DrawLine(x, Height - 20, Width -20, Height-20,paint );      // X-axis
-            canvas.DrawLine(x, Height -20, x, 250,paint );       // Y-axis
+            canvas.DrawLine(x, Height -20, x, 350,paint );       // Y-axis
 
             // Drawing the graph            
             if (track.Count >= 3)

@@ -87,7 +87,7 @@ namespace RunApp
 
             stopwatch = new Stopwatch();        // Stopwatch for time measurement
 
-           /* track.Add(new DataPoint(new PointF(139191.1f, 455584.9f), new TimeSpan(0, 0, 0, 1, 734)));
+            track.Add(new DataPoint(new PointF(139191.1f, 455584.9f), new TimeSpan(0, 0, 0, 1, 734)));
             track.Add(new DataPoint(new PointF(139175.0f, 455596.5f), new TimeSpan(0, 0, 0, 4, 936)));
             track.Add(new DataPoint(new PointF(139156.3f, 455614.8f), new TimeSpan(0, 0, 0, 5, 736)));
             track.Add(new DataPoint(new PointF(139135.8f, 455632.2f), new TimeSpan(0, 0, 0, 7, 733)));
@@ -97,7 +97,7 @@ namespace RunApp
             track.Add(new DataPoint(new PointF(139064.9f, 455730.5f), new TimeSpan(0, 0, 0, 15, 752)));
             track.Add(new DataPoint(new PointF(139053.2f, 455760.7f), new TimeSpan(0, 0, 0, 17, 756)));
             track.Add(new DataPoint(new PointF(139041.3f, 455790.4f), new TimeSpan(0, 0, 0, 19, 751)));
-            track.Add(new DataPoint(new PointF(139028.9f, 455821.0f), new TimeSpan(0, 0, 0, 21, 732)));*/
+            track.Add(new DataPoint(new PointF(139028.9f, 455821.0f), new TimeSpan(0, 0, 0, 21, 732)));
         }
 
         /// <summary>
@@ -361,6 +361,11 @@ namespace RunApp
         /// <returns></returns>
         public override string ToString()
         {
+            return TrackToString(track);
+        }
+
+        public static string TrackToString(List<DataPoint> track)
+        {
             string res = "";
             if (track.Count != 0)
             {
@@ -370,11 +375,12 @@ namespace RunApp
                     res += "\n";
                 }
 
-                res+= $"{track.Last().currentLocation.X} {track.Last().currentLocation.Y} {track.Last().currentTime.Ticks}";
+                res += $"{track.Last().currentLocation.X} {track.Last().currentLocation.Y} {track.Last().currentTime.Ticks}";
             }
 
             return res;
         }
+   
 
         /// <summary>
         /// Creates a string for the share button
