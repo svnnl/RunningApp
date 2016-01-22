@@ -10,7 +10,7 @@ namespace RunApp
     /// <summary>
     /// Main activity of the Running App
     /// </summary>
-    [Activity(Label = "5532795 RunForrest", MainLauncher = true, Icon = "@drawable/run")]
+    [Activity(Label = "5532795 RunForrest", MainLauncher = true, Icon = "@drawable/Icon")]
     public class RunningApp : Activity
     {
         // Declaring variables

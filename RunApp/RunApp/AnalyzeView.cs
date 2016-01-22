@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Android.App;
 using Android.Content;
 using Android.Graphics;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
+
 
 namespace RunApp
 {
@@ -79,8 +75,8 @@ namespace RunApp
             canvas.DrawText("Speed/Time graph", Width / 2 - 200, 300, paint);
 
             // Drawing the axis
-            canvas.DrawLine(x, Height - 20, Width -20, Height-20,paint );      // X-axis
-            canvas.DrawLine(x, Height -20, x, 350,paint );       // Y-axis
+            canvas.DrawLine(x, Height - 20, Width - 20, Height - 20, paint);      // X-axis
+            canvas.DrawLine(x, Height - 20, x, 350, paint);       // Y-axis
 
             // Drawing the graph            
             if (track.Count >= 3)
@@ -94,12 +90,13 @@ namespace RunApp
                     double speed3 = Speed(track[t], track[t + 1]);
                     double speed4 = Speed(track[t + 1], track[t + 2]);
                     double avgSpeed2 = (speed3 + speed4) / 2;
-                    
-                    canvas.DrawPoint(w * t, (float)avgSpeed * h, paint);
-                    canvas.DrawLine(w * t, (float)avgSpeed * h, w * (t + 1), (float)avgSpeed2 * h, paint); 
+
+                    canvas.DrawLine(w * t, (float)avgSpeed * h, w * (t + 1), (float)avgSpeed2 * h, paint);
                 }
             }
-           
+            else
+                canvas.DrawText("Insufficient amount of track points", 125, 900, paint);
+
         }
 
         /// <summary>
@@ -187,7 +184,7 @@ namespace RunApp
                 return maxspeed;
             }
             else
-                return 0;
+                return -1;
         }
     }
 }
