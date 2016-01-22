@@ -59,6 +59,8 @@
     <Compile Include="SaveApp.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="SQLite.cs" />
+    <Compile Include="TrackAdapter.cs" />
+    <Compile Include="TrackItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

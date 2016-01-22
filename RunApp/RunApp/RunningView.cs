@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic; // Vanwege IList
 using System.Diagnostics; // Vanwege Stopwatch
+using System.Linq;
 
 using Android.App;
 using Android.Content;
@@ -86,6 +87,17 @@ namespace RunApp
 
             stopwatch = new Stopwatch();        // Stopwatch for time measurement
 
+           /* track.Add(new DataPoint(new PointF(139191.1f, 455584.9f), new TimeSpan(0, 0, 0, 1, 734)));
+            track.Add(new DataPoint(new PointF(139175.0f, 455596.5f), new TimeSpan(0, 0, 0, 4, 936)));
+            track.Add(new DataPoint(new PointF(139156.3f, 455614.8f), new TimeSpan(0, 0, 0, 5, 736)));
+            track.Add(new DataPoint(new PointF(139135.8f, 455632.2f), new TimeSpan(0, 0, 0, 7, 733)));
+            track.Add(new DataPoint(new PointF(139114.9f, 455652.7f), new TimeSpan(0, 0, 0, 9, 780)));
+            track.Add(new DataPoint(new PointF(139095.4f, 455675.7f), new TimeSpan(0, 0, 0, 11, 772)));
+            track.Add(new DataPoint(new PointF(139078.4f, 455702.9f), new TimeSpan(0, 0, 0, 13, 733)));
+            track.Add(new DataPoint(new PointF(139064.9f, 455730.5f), new TimeSpan(0, 0, 0, 15, 752)));
+            track.Add(new DataPoint(new PointF(139053.2f, 455760.7f), new TimeSpan(0, 0, 0, 17, 756)));
+            track.Add(new DataPoint(new PointF(139041.3f, 455790.4f), new TimeSpan(0, 0, 0, 19, 751)));
+            track.Add(new DataPoint(new PointF(139028.9f, 455821.0f), new TimeSpan(0, 0, 0, 21, 732)));*/
         }
 
         /// <summary>
@@ -352,11 +364,13 @@ namespace RunApp
             string res = "";
             if (track.Count != 0)
             {
-                foreach (DataPoint t in track)
+                for (int t = 0; t <= track.Count - 2; t++)
                 {
-                    res += $"{t.currentLocation.X} {t.currentLocation.Y} {t.currentTime.Ticks}";
+                    res += $"{track[t].currentLocation.X} {track[t].currentLocation.Y} {track[t].currentTime.Ticks}";
                     res += "\n";
                 }
+
+                res+= $"{track.Last().currentLocation.X} {track.Last().currentLocation.Y} {track.Last().currentTime.Ticks}";
             }
 
             return res;
@@ -374,7 +388,7 @@ namespace RunApp
                 res = $"Total distance: {Math.Round(AnalyzeView.totalDistance(track), 2)}m with average velocity {Math.Round(AnalyzeView.avgSpeed(track), 2)}m/s.\n";
                 foreach (DataPoint t in track)
                 {
-                    res += $"{t.currentLocation.X} | {t.currentLocation.Y} | {t.currentTime}";
+                    res += $"{t.currentLocation.X} Latitude, {t.currentLocation.Y} Longitude, {t.currentTime}";
                     res += "\n";
                 }
             }

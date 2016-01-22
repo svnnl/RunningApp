@@ -22,8 +22,8 @@ namespace RunApp
     public class SaveApp : Activity
     {
         ListView lView;
-        ArrayAdapter<string> adp;
-        string[] trackList = { "Track 1", "Track 2" };
+        TrackAdapter trackAdapter;
+        List<TrackItem> trackList;
         string message;
         Button save;
         LinearLayout stack;
@@ -40,12 +40,9 @@ namespace RunApp
             message = Intent.GetStringExtra("message") ?? "";
 
             lView = new ListView(this);
-            adp = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSelectableListItem, trackList);
-            lView.Adapter = adp;
-
             lView.ChoiceMode = ChoiceMode.None;
-
             lView.ItemClick += click;
+            this.readTrack();
 
             stack = new LinearLayout(this);
             stack.Orientation = Orientation.Vertical;
@@ -65,12 +62,10 @@ namespace RunApp
             int pos = e.Position;
             Intent i = new Intent(this, typeof(AnalyzeApp));
             // Position of item
-            string t = trackList[pos];
-            Intent.PutExtra("item", t);
+            string t = trackList[pos].value;
+            Intent.PutExtra("message", t);
 
-            Toast.MakeText(this, t, ToastLength.Short).Show();
-
-            // StartActivity(i);
+            StartActivity(i);
         }
 
         /// <summary>
@@ -80,7 +75,11 @@ namespace RunApp
         /// <param name="ea"></param>
         private void saveCurrentTrack(object sender, EventArgs ea)
         {
-
+            if (message != "")
+            {
+                database.Insert(new TrackItem("track", message));
+                trackList.Add(new TrackItem("track", message));
+            }
         }
 
         protected virtual void startSaving()
@@ -91,17 +90,24 @@ namespace RunApp
             database = new SQLiteConnection(path);
             if (!exists)
             {
-                database.CreateTable<string>();
-                foreach (string s in trackList)
+                database.CreateTable<TrackItem>();
+                foreach (TrackItem t in trackList)
                 {
-                    database.Insert(s);
+                    database.Insert(t);
                 }
             }
         }
 
         protected virtual void readTrack()
         {
-
+            trackList = new List<TrackItem>();
+            TableQuery<TrackItem> query = database.Table<TrackItem>();
+            foreach(TrackItem t in query)
+            {
+                trackList.Add(t);
+            }
+            trackAdapter = new TrackAdapter(this, trackList);
+            lView.Adapter = trackAdapter;
         }
     }
 }
