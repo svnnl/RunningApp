@@ -1,5 +1,8 @@
 namespace RunApp
 {
+    /// <summary>
+    /// Class for storage in the database
+    /// </summary>
     public class TrackItem
     {
         [PrimaryKey, AutoIncrement]

@@ -8,7 +8,7 @@ using Android.Graphics;
 namespace RunApp
 {
     /// <summary>
-    /// Main activity of the Running App
+    /// Main activity of the app
     /// </summary>
     [Activity(Label = "5532795 RunForrest", MainLauncher = true, Icon = "@drawable/Icon")]
     public class RunningApp : Activity
@@ -105,7 +105,6 @@ namespace RunApp
             superstack.AddView(buttons2);
             superstack.AddView(status);
             superstack.AddView(runv);
-            // superstack.SetBackgroundColor(Color.Cyan);
 
             // Set our view from the LinearLayout
             SetContentView(superstack);

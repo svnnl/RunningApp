@@ -6,6 +6,9 @@ using Android.Widget;
 
 namespace RunApp
 {
+    /// <summary>
+    /// Adapter for the storage of TrackItems
+    /// </summary>
     public class TrackAdapter : BaseAdapter<TrackItem>
     {
         IList<TrackItem> items;

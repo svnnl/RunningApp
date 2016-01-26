@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Graphics;
-using Android.Views;
 using Android.Widget;
 
 
@@ -42,7 +39,8 @@ namespace RunApp
 
             lView = new ListView(this);
             lView.ChoiceMode = ChoiceMode.None;
-            lView.ItemClick += click;
+            lView.ItemClick += analyze;     // Analyzes with a single click
+            lView.ItemLongClick += delete;  // Deletes when item is selected for a longer time
             this.readTrack();
 
             stack = new LinearLayout(this);
@@ -54,11 +52,11 @@ namespace RunApp
         }
 
         /// <summary>
-        /// Event on click of a List Item
+        /// Analyzes the selected item
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void click(object sender, AdapterView.ItemClickEventArgs e)
+        public void analyze(object sender, AdapterView.ItemClickEventArgs e)
         {
             int pos = e.Position;
             Intent i = new Intent(this, typeof(AnalyzeApp));
@@ -70,7 +68,34 @@ namespace RunApp
         }
 
         /// <summary>
-        /// Event on click the Save button
+        /// Deletes the item that has been long clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void delete(object sender, AdapterView.ItemLongClickEventArgs e)
+        {
+            int pos = e.Position;
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.SetTitle("Delete item")
+            .SetMessage("Are you sure you want to delete this track?")
+            .SetCancelable(false)
+            .SetPositiveButton("Yes", (object o, DialogClickEventArgs d) =>
+            {
+                database.Delete(trackAdapter[pos]); // Deletes the item that has been selected
+                Toast.MakeText(this, $"Track {trackAdapter[pos].Id} has been deleted.", ToastLength.Short).Show();
+                this.readTrack();
+            })
+            .SetNegativeButton("No", (object o, DialogClickEventArgs d) =>
+            {
+                // Do nothing
+            })
+            .Show();
+
+        }
+
+        /// <summary>
+        /// Saves the active track from the RunningView class
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="ea"></param>
@@ -86,6 +111,9 @@ namespace RunApp
                 Toast.MakeText(this, "There is no active track to save.", ToastLength.Short).Show();
         }
 
+        /// <summary>
+        /// Creates a database file and stores dummy track in it
+        /// </summary>
         protected virtual void startSaving()
         {
             string docsFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
@@ -113,6 +141,9 @@ namespace RunApp
             }
         }
 
+        /// <summary>
+        /// Reads and updates the adapter
+        /// </summary>
         protected virtual void readTrack()
         {
             List<TrackItem> trackList = new List<TrackItem>();
